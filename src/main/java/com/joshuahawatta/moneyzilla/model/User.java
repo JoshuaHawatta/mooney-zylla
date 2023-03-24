@@ -1,5 +1,6 @@
 package com.joshuahawatta.moneyzilla.model;
 
+import com.joshuahawatta.moneyzilla.entities.basemodelentity.BaseModelEntity;
 import jakarta.persistence.*;
 import org.hibernate.annotations.ColumnDefault;
 import java.io.Serial;
@@ -11,7 +12,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "users")
-public class User implements Serializable {
+public class User extends BaseModelEntity implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
