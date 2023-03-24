@@ -1,6 +1,8 @@
 package com.joshuahawatta.moneyzilla.model;
 
+import com.joshuahawatta.moneyzilla.entities.basemodelentity.BaseModelEntity;
 import jakarta.persistence.*;
+import org.springframework.format.annotation.DateTimeFormat;
 import java.io.Serial;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -9,7 +11,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "billings")
-public class Billing implements Serializable {
+public class Billing extends BaseModelEntity implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
@@ -30,6 +32,7 @@ public class Billing implements Serializable {
     @Column(name = "description")
     private String description;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "bought_date", nullable = false)
     private LocalDateTime boughtDate;
 
@@ -41,14 +44,14 @@ public class Billing implements Serializable {
     public Billing() {}
 
     public Billing(
-            Long id,
+        Long id,
         String name,
         BigDecimal price,
         String type,
         String description,
         LocalDateTime boughtDate,
-        User user)
-    {
+        User user
+    ) {
         this.id = id;
         this.name = name;
         this.price = new BigDecimal("" + price + "");
