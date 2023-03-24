@@ -1,4 +1,4 @@
-package com.joshuahawatta.moneyzilla.model;
+package com.joshuahawatta.moneyzilla.models;
 
 import com.joshuahawatta.moneyzilla.entities.basemodelentity.BaseModelEntity;
 import jakarta.persistence.*;
