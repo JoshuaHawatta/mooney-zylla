@@ -1,7 +1,10 @@
-package com.joshuahawatta.moneyzilla.model;
+package com.joshuahawatta.moneyzilla.models;
 
 import com.joshuahawatta.moneyzilla.entities.basemodelentity.BaseModelEntity;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import org.hibernate.annotations.ColumnDefault;
 import java.io.Serial;
 import java.io.Serializable;
@@ -21,12 +24,17 @@ public class User extends BaseModelEntity implements Serializable {
     @Id
     private Long id;
 
+    @NotBlank(message = "Nome obrigatório!")
     @Column(name = "name", nullable = false)
     private String name;
 
+    @NotBlank(message = "E-mail obrigatório!")
+    @Email(message = "E-mail inválido!")
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
+    @NotBlank(message = "Senha obrigatória!")
+    @Size(min = 8, message = "A senha deve ter no mínimo 8 caractéres!")
     @Column(name = "password", nullable = false)
     private String password;
 
@@ -40,8 +48,7 @@ public class User extends BaseModelEntity implements Serializable {
     //CONSTRUCTORS_OVERLOADS
     public User() {}
 
-    public User(Long id, String name, String email, String password, BigDecimal money) {
-        this.id = id;
+    public User(String name, String email, String password, BigDecimal money) {
         this.name = name;
         this.email = email;
         this.password = password;
