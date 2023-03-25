@@ -6,6 +6,7 @@ import com.joshuahawatta.moneyzilla.models.User;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class UserDto {
     private Long id;
@@ -21,6 +22,19 @@ public class UserDto {
         this.money = user.getMoney();
         this.billings = user.getBillings();
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        UserDto userDto = (UserDto) o;
+
+        return Objects.equals(id, userDto.id) && Objects.equals(name, userDto.name) && Objects.equals(email, userDto.email) && Objects.equals(money, userDto.money) && Objects.equals(billings, userDto.billings);
+    }
+
+    @Override
+    public int hashCode() { return Objects.hash(id, name, email, money, billings); }
 
     //GETTERS_AND_SETTERS
     public Long getId() { return id; }
