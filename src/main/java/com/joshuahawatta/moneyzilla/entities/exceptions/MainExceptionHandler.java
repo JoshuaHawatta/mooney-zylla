@@ -2,6 +2,7 @@ package com.joshuahawatta.moneyzilla.entities.exceptions;
 
 import com.joshuahawatta.moneyzilla.entities.responses.Response;
 import com.joshuahawatta.moneyzilla.entities.responses.ResponseResult;
+import jakarta.validation.ValidationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -18,9 +19,14 @@ public class MainExceptionHandler {
         return Response.sendResponse(new ResponseResult<>(404, exception.getMessage()));
     }
 
-    //UNPROCESSABLE_ENTITY_HANDLER
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Response<String>> handleUnprocessableEntity(IllegalArgumentException exception) {
+    //UNPROCESSABLE_ENTITY_HANDLERS
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<Response<String>> handleUnprocessableEntity(ValidationException exception) {
+        return Response.sendResponse(new ResponseResult<>(422, exception.getMessage()));
+    }
+
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<Response<String>> IllegalArgumentException(IllegalArgumentException exception) {
         return Response.sendResponse(new ResponseResult<>(422, exception.getMessage()));
     }
 
