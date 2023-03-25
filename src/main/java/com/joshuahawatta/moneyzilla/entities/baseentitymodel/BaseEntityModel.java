@@ -1,4 +1,4 @@
-package com.joshuahawatta.moneyzilla.entities.basemodelentity;
+package com.joshuahawatta.moneyzilla.entities.baseentitymodel;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
@@ -9,7 +9,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 
 @MappedSuperclass
-public abstract class BaseModelEntity {
+public abstract class BaseEntityModel {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
