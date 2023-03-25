@@ -1,6 +1,6 @@
 package com.joshuahawatta.moneyzilla.models;
 
-import com.joshuahawatta.moneyzilla.entities.basemodelentity.BaseModelEntity;
+import com.joshuahawatta.moneyzilla.entities.baseentitymodel.BaseEntityModel;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -15,7 +15,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "users")
-public class User extends BaseModelEntity implements Serializable {
+public class User extends BaseEntityModel implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
@@ -52,7 +52,7 @@ public class User extends BaseModelEntity implements Serializable {
         this.name = name;
         this.email = email;
         this.password = password;
-        this.money = money != null ? new BigDecimal("" + money + "") : new BigDecimal(0.00);
+        this.money = money != null ? new BigDecimal("" + money + "") : BigDecimal.valueOf(0.00);
     }
 
     @Override
