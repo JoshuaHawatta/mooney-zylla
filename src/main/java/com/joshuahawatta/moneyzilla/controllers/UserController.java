@@ -42,4 +42,17 @@ public class UserController {
         );
     }
 
+    @PostMapping(value = "update/{id}")
+    public ResponseEntity<Response<UserDto>> updateAccount(@PathVariable Long id, @RequestBody User user) {
+        UserDto newUser = service.update(id, user);
+
+        return Response.sendResponse(new ResponseResult<>(201, newUser));
+    }
+
+    @DeleteMapping(value = "deleteaccount/{id}")
+    public ResponseEntity<Response<String>> deleteAccount(@PathVariable Long id) {
+        service.deleteById(id);
+
+        return Response.sendResponse(new ResponseResult<>(200, "Até mais, obrigado pelos peixes!"));
+    }
 }
