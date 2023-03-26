@@ -80,7 +80,7 @@ public class UserService {
         return new UserDto(newUser);
     }
 
-    public void update(Long id, User user) {
+    public UserDto update(Long id, User user) {
         if(id == null || id <= 0) throw new IllegalArgumentException(INVALID_ID_MESSAGE);
 
         Optional<User> existingUser = repository.findById(id);
@@ -99,6 +99,8 @@ public class UserService {
         foundUser.setMoney(new BigDecimal("" + user.getMoney() + ""));
 
         repository.save(foundUser);
+
+        return new UserDto(foundUser);
     }
 
     public void deleteById(Long id) {
