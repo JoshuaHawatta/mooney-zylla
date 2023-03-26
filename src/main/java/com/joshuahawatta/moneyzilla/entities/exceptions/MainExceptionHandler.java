@@ -2,16 +2,14 @@ package com.joshuahawatta.moneyzilla.entities.exceptions;
 
 import com.joshuahawatta.moneyzilla.entities.responses.Response;
 import com.joshuahawatta.moneyzilla.entities.responses.ResponseResult;
-import jakarta.validation.ValidationException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.server.ServerErrorException;
 
 @ControllerAdvice
 public class MainExceptionHandler {
-    private static final String SERVER_ERROR_MESSAGE = "Ops, algo deu errado na nossa parte, tente mais tarde!";
+    protected static final String SERVER_ERROR_MESSAGE = "Ops, algo deu errado na nossa parte, tente mais tarde!";
 
     //NOT_FOUND_HANDLER
     @ExceptionHandler(NullPointerException.class)
@@ -19,31 +17,9 @@ public class MainExceptionHandler {
         return Response.sendResponse(new ResponseResult<>(404, exception.getMessage()));
     }
 
-    //UNPROCESSABLE_ENTITY_HANDLERS
-    @ExceptionHandler(ValidationException.class)
-    public ResponseEntity<Response<String>> handleUnprocessableEntity(ValidationException exception) {
-        return Response.sendResponse(new ResponseResult<>(422, exception.getMessage()));
-    }
-
-    @ExceptionHandler(ValidationException.class)
-    public ResponseEntity<Response<String>> IllegalArgumentException(IllegalArgumentException exception) {
-        return Response.sendResponse(new ResponseResult<>(422, exception.getMessage()));
-    }
-
-    //SERVER_ERROR_HANDLER
-    @ExceptionHandler(ServerErrorException.class)
-    public ResponseEntity<Response<String>> handleServerError(ServerErrorException exception) {
-        return Response.sendResponse(new ResponseResult<>(500, SERVER_ERROR_MESSAGE));
-    }
-
-    @ExceptionHandler(HttpServerErrorException.class)
-    public ResponseEntity<Response<String>> handleHttpServerError(HttpServerErrorException exception) {
-        return Response.sendResponse(new ResponseResult<>(500, SERVER_ERROR_MESSAGE));
-    }
-
-    //UNKNOWN_ERROR
-    @ExceptionHandler(UnknownError.class)
-    public ResponseEntity<Response<String>> handleUnknownError(UnknownError exception) {
-        return Response.sendResponse(new ResponseResult<>(520, SERVER_ERROR_MESSAGE));
+    //DENIED_ACESS_ERROR_HANDLER
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Response<String>> handleServerError(AccessDeniedException exception) {
+        return Response.sendResponse(new ResponseResult<>(403, exception.getMessage()));
     }
 }
