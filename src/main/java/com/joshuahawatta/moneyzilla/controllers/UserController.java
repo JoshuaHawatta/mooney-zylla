@@ -28,7 +28,7 @@ public class UserController {
         return Response.sendResponse(new ResponseResult<>(200, service.findById(id)));
     }
 
-    @GetMapping(value = "login/{email}")
+    @PostMapping(value = "login")
     public ResponseEntity<Response<UserDto>> findByEmail(@RequestBody User user) {
         return Response.sendResponse(new ResponseResult<>(200, service.login(user)));
     }
