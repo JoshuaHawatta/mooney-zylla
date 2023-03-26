@@ -5,7 +5,7 @@ import jakarta.validation.ValidationException;
 import jakarta.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import java.util.Set;
+import java.util.List;
 
 @Component
 public class Validations {
@@ -14,8 +14,9 @@ public class Validations {
 
     private Validations() {}
 
-    public <T> void setValidations(T entity) {
-        Set<ConstraintViolation<T>> violations = validator.validate(entity);
-        if (!violations.isEmpty()) throw new ValidationException("Usuário inválido!", (Throwable) violations);
+    public <T> void validate(T entity) {
+        List<ConstraintViolation<T>> violations = validator.validate(entity).stream().toList();
+
+        if (!violations.isEmpty()) throw new ValidationException(violations.get(0).getMessage());
     }
 }
