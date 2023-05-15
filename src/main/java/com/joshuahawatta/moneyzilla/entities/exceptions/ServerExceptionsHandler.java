@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.server.ServerErrorException;
 
+import java.sql.SQLException;
+
 @ControllerAdvice
 public class ServerExceptionsHandler extends MainExceptionHandler {
     @ExceptionHandler(ServerErrorException.class)
@@ -17,6 +19,11 @@ public class ServerExceptionsHandler extends MainExceptionHandler {
 
     @ExceptionHandler(HttpServerErrorException.class)
     public ResponseEntity<Response<String>> handleHttpException(HttpServerErrorException exception) {
+        return Response.sendResponse(new ResponseResult<>(500, SERVER_ERROR_MESSAGE));
+    }
+
+    @ExceptionHandler(SQLException.class)
+    public ResponseEntity<Response<String>> handleSQLException(SQLException exception) {
         return Response.sendResponse(new ResponseResult<>(500, SERVER_ERROR_MESSAGE));
     }
 
