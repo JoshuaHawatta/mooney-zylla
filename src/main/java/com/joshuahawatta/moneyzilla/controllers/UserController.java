@@ -5,7 +5,7 @@ import com.joshuahawatta.moneyzilla.entities.responses.Response;
 import com.joshuahawatta.moneyzilla.entities.responses.ResponseResult;
 import com.joshuahawatta.moneyzilla.entities.responses.ResponseResultWIthMessage;
 import com.joshuahawatta.moneyzilla.models.Users;
-import com.joshuahawatta.moneyzilla.services.UserService;
+import com.joshuahawatta.moneyzilla.services.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

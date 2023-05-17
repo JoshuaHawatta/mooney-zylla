@@ -1,4 +1,4 @@
-package com.joshuahawatta.moneyzilla.services;
+package com.joshuahawatta.moneyzilla.services.user;
 
 import com.joshuahawatta.moneyzilla.dtos.user.UserDto;
 import com.joshuahawatta.moneyzilla.configurations.Validations;
