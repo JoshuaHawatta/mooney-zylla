@@ -42,8 +42,8 @@ public class Billing extends BaseEntityModel implements Serializable {
     private LocalDateTime boughtDate;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "users_id")
+    private Users users;
 
     //CONSTRUCTORS_OVERLOADS
     public Billing() {}
@@ -55,7 +55,7 @@ public class Billing extends BaseEntityModel implements Serializable {
         String type,
         String description,
         LocalDateTime boughtDate,
-        User user
+        Users users
     ) {
         this.id = id;
         this.name = name;
@@ -63,7 +63,7 @@ public class Billing extends BaseEntityModel implements Serializable {
         this.type = type;
         this.description = description;
         this.boughtDate = boughtDate;
-        this.user = user;
+        this.users = users;
     }
 
     @Override
@@ -73,7 +73,7 @@ public class Billing extends BaseEntityModel implements Serializable {
 
         Billing billing = (Billing) o;
 
-        return Objects.equals(id, billing.id) && Objects.equals(name, billing.name) && Objects.equals(price, billing.price) && Objects.equals(type, billing.type) && Objects.equals(description, billing.description) && Objects.equals(boughtDate, billing.boughtDate) && Objects.equals(user, billing.user);
+        return Objects.equals(id, billing.id) && Objects.equals(name, billing.name) && Objects.equals(price, billing.price) && Objects.equals(type, billing.type) && Objects.equals(description, billing.description) && Objects.equals(boughtDate, billing.boughtDate) && Objects.equals(users, billing.users);
     }
 
     @Override
@@ -85,7 +85,7 @@ public class Billing extends BaseEntityModel implements Serializable {
     }
 
     @Override
-    public int hashCode() { return Objects.hash(id, name, price, type, description, boughtDate, user); }
+    public int hashCode() { return Objects.hash(id, name, price, type, description, boughtDate, users); }
 
     //GETTERS_AND_SETTERS
     public Long getId() { return id; }
@@ -112,7 +112,7 @@ public class Billing extends BaseEntityModel implements Serializable {
 
     public void setBoughtDate(LocalDateTime boughtDate) { this.boughtDate = boughtDate; }
 
-    public User getUser() { return user; }
+    public Users getUser() { return users; }
 
-    public void setUser(User user) { this.user = user; }
+    public void setUser(Users users) { this.users = users; }
 }

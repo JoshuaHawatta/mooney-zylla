@@ -4,7 +4,7 @@ import com.joshuahawatta.moneyzilla.dtos.user.UserDto;
 import com.joshuahawatta.moneyzilla.entities.responses.Response;
 import com.joshuahawatta.moneyzilla.entities.responses.ResponseResult;
 import com.joshuahawatta.moneyzilla.entities.responses.ResponseResultWIthMessage;
-import com.joshuahawatta.moneyzilla.models.User;
+import com.joshuahawatta.moneyzilla.models.Users;
 import com.joshuahawatta.moneyzilla.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -29,13 +29,13 @@ public class UserController {
     }
 
     @PostMapping(value = "login")
-    public ResponseEntity<Response<UserDto>> findByEmail(@RequestBody User user) {
-        return Response.sendResponse(new ResponseResult<>(200, service.login(user)));
+    public ResponseEntity<Response<UserDto>> findByEmail(@RequestBody Users users) {
+        return Response.sendResponse(new ResponseResult<>(200, service.login(users)));
     }
 
     @PostMapping(value = "register")
-    public ResponseEntity<Response<UserDto>> save(@RequestBody User user) {
-        UserDto newUser = service.save(user);
+    public ResponseEntity<Response<UserDto>> save(@RequestBody Users users) {
+        UserDto newUser = service.save(users);
 
         return Response.sendResponse(
             new ResponseResultWIthMessage<>(201, newUser, "Olá, " + newUser.getName() + "!")
@@ -43,8 +43,8 @@ public class UserController {
     }
 
     @PostMapping(value = "update/{id}")
-    public ResponseEntity<Response<UserDto>> updateAccount(@PathVariable Long id, @RequestBody User user) {
-        UserDto newUser = service.update(id, user);
+    public ResponseEntity<Response<UserDto>> updateAccount(@PathVariable Long id, @RequestBody Users users) {
+        UserDto newUser = service.update(id, users);
 
         return Response.sendResponse(new ResponseResult<>(201, newUser));
     }

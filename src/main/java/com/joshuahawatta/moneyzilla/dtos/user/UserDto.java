@@ -1,10 +1,8 @@
 package com.joshuahawatta.moneyzilla.dtos.user;
 
 import com.joshuahawatta.moneyzilla.models.Billing;
-import com.joshuahawatta.moneyzilla.models.User;
-
+import com.joshuahawatta.moneyzilla.models.Users;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -15,14 +13,17 @@ public class UserDto {
     private BigDecimal money;
     private List<Billing> billings;
 
-    public UserDto(User user) {
-        this.id = user.getId();
-        this.name = user.getName();
-        this.email = user.getEmail();
-        this.money = user.getMoney();
-        this.billings = user.getBillings();
+    public UserDto(Users users) {
+        this.id = users.getId();
+        this.name = users.getName();
+        this.email = users.getEmail();
+        this.money = users.getMoney();
+        this.billings = users.getBillings();
     }
 
+    /**
+     * Class main methods
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -36,7 +37,9 @@ public class UserDto {
     @Override
     public int hashCode() { return Objects.hash(id, name, email, money, billings); }
 
-    //GETTERS_AND_SETTERS
+    /**
+     * Getters and setters
+     */
     public Long getId() { return id; }
 
     public void setId(Long id) { this.id = id; }
