@@ -1,7 +1,8 @@
 package com.joshuahawatta.moneyzilla.dtos.billing;
 
 import com.joshuahawatta.moneyzilla.models.Billing;
-import com.joshuahawatta.moneyzilla.models.User;
+import com.joshuahawatta.moneyzilla.models.Users;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -13,7 +14,7 @@ public class BillingDto {
     private String description;
     private BigDecimal price;
     private LocalDateTime boughtDate;
-    private User user;
+    private Users users;
 
     public BillingDto(Billing billing) {
         id = billing.getId();
@@ -22,7 +23,7 @@ public class BillingDto {
         description = billing.getDescription();
         price = billing.getPrice();
         boughtDate = billing.getBoughtDate();
-        user = billing.getUser();
+        users = billing.getUser();
     }
 
     @Override
@@ -32,11 +33,11 @@ public class BillingDto {
 
         BillingDto that = (BillingDto) o;
 
-        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(type, that.type) && Objects.equals(description, that.description) && Objects.equals(price, that.price) && Objects.equals(boughtDate, that.boughtDate) && Objects.equals(user, that.user);
+        return Objects.equals(id, that.id) && Objects.equals(name, that.name) && Objects.equals(type, that.type) && Objects.equals(description, that.description) && Objects.equals(price, that.price) && Objects.equals(boughtDate, that.boughtDate) && Objects.equals(users, that.users);
     }
 
     @Override
-    public int hashCode() { return Objects.hash(id, name, type, description, price, boughtDate, user); }
+    public int hashCode() { return Objects.hash(id, name, type, description, price, boughtDate, users); }
 
     //GETTERS_AND_SETTERS
     public Long getId() { return id; }
@@ -63,7 +64,7 @@ public class BillingDto {
 
     public void setBoughtDate(LocalDateTime boughtDate) { this.boughtDate = boughtDate; }
 
-    public User getUser() { return user; }
+    public Users getUser() { return users; }
 
-    public void setUser(User user) { this.user = user; }
+    public void setUser(Users users) { this.users = users; }
 }
