@@ -14,6 +14,9 @@ public class Validations {
 
     private Validations() {}
 
+    /**
+     * @param entity search the validations of an entity and if there´s any violation to throw a exception.
+     */
     public <T> void validate(T entity) {
         List<ConstraintViolation<T>> violations = validator.validate(entity).stream().toList();
 
