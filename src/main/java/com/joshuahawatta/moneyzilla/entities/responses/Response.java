@@ -2,21 +2,36 @@ package com.joshuahawatta.moneyzilla.entities.responses;
 
 import org.springframework.http.ResponseEntity;
 
+/**
+ * An abstract class for handling ResponseEntity<TypeHere> returns.
+ * @param <T> for handling multiple return cases
+ */
 public abstract sealed class Response<T> permits ResponseResult, ResponseResultWIthMessage {
     protected Integer statusCode;
     protected T result;
 
-    //CONSTRUCTOR
+    /**
+     * @param statusCode so a ResponseEntity always have a status code with it
+     * @param result the result that can be anything, such as primitive types, classes or even Exceptions.
+     */
     protected Response(Integer statusCode, T result) {
         this.statusCode = statusCode;
         this.result = result;
     }
 
+    /**
+     * @param response instance a heir class such as ResponseResult with the required data.
+     * @@implNote Response.sendResponse(new ResponseResult<String>(200, "Hello, world!")).
+     * @return a ResponseEntity<Response<T>, will send a ResponseEntity with the status and result of the heir class.
+     * @param <T>
+     */
     public static <T> ResponseEntity<Response<T>> sendResponse(Response<T> response) {
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }
 
-    //GETTERS_AND_SETTERS
+    /**
+     * Getters and setters.
+     */
     public Integer getStatusCode() {
         return statusCode;
     }

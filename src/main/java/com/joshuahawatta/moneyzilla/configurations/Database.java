@@ -7,6 +7,9 @@ import org.springframework.context.annotation.Configuration;
 
 import javax.sql.DataSource;
 
+/**
+ * Values loaded from resources.application.properties file. There, the .env variables are loaded.
+ */
 @Configuration
 public class Database {
     @Value("${DB.url}")
@@ -18,6 +21,9 @@ public class Database {
     @Value("${DB.password}")
     private String password;
 
+    /**
+     * @return a new DataSource that´ll connect to the database.
+     */
     @Bean
     public DataSource dataSource() {
         DataSourceBuilder<?> dataSource = DataSourceBuilder.create();
