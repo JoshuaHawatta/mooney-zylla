@@ -32,7 +32,9 @@ public class WebConfigSecurity {
             .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
             .disable()
             .authorizeHttpRequests(req -> {
-                    req.requestMatchers("/", "/index", LOGIN_ROUTE, "/user/register").permitAll();
+                    req.requestMatchers(
+                        "/", "/index", "/home", "/dashboard", LOGIN_ROUTE, "/user/register"
+                    ).permitAll();
 
                     try {
                         req.anyRequest()
@@ -45,8 +47,6 @@ public class WebConfigSecurity {
                 }
             )
             .httpBasic();
-
-        //filtrar requisições de login para autenticação do JWT no header http.
 
         return http.build();
     }
