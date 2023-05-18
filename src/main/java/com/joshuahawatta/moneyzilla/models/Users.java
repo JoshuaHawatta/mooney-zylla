@@ -130,11 +130,15 @@ public class Users extends BaseEntityModel implements UserDetails {
 
     public void setBillings(List<Billing> billings) { this.billings = billings; }
 
+    public List<Roles> getRoles() { return roles; }
+
+    public void setRoles(List<Roles> roles) { this.roles = roles; }
+
     /**
      * Users authorizations list. Example: ROLE_ADMIN or ROLE_USER
      */
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() { return roles; }
+    public Collection<? extends GrantedAuthority> getAuthorities() { return this.roles; }
 
     /**
      * UserDetails interface methods (DO NOT remove the others email and password getters e setters).

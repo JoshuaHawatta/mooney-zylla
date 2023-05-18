@@ -1,6 +1,7 @@
 package com.joshuahawatta.moneyzilla.dtos.user;
 
 import com.joshuahawatta.moneyzilla.models.Billing;
+import com.joshuahawatta.moneyzilla.models.Roles;
 import com.joshuahawatta.moneyzilla.models.Users;
 import java.math.BigDecimal;
 import java.util.List;
@@ -12,6 +13,7 @@ public class UserDto {
     private String email;
     private BigDecimal money;
     private List<Billing> billings;
+    private List<Roles> roles;
 
     public UserDto(Users users) {
         this.id = users.getId();
@@ -19,6 +21,7 @@ public class UserDto {
         this.email = users.getEmail();
         this.money = users.getMoney();
         this.billings = users.getBillings();
+        this.roles = users.getRoles();
     }
 
     /**
@@ -59,4 +62,8 @@ public class UserDto {
     public List<Billing> getBillings() { return billings; }
 
     public void setBillings(List<Billing> billings) { this.billings = billings; }
+
+    public List<Roles> getRoles() { return roles; }
+
+    public void setRoles(List<Roles> roles) { this.roles = roles; }
 }
