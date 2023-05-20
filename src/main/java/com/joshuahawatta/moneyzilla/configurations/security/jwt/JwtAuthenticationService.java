@@ -1,6 +1,6 @@
-package com.joshuahawatta.moneyzilla.security.jwt;
+package com.joshuahawatta.moneyzilla.configurations.security.jwt;
 
-import com.joshuahawatta.moneyzilla.configurations.ApplicationContextLoad;
+import com.joshuahawatta.moneyzilla.configurations.contextload.ApplicationContextLoad;
 import com.joshuahawatta.moneyzilla.models.Users;
 import com.joshuahawatta.moneyzilla.repositories.UserRepository;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -13,19 +13,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-
 import java.io.IOException;
 import java.util.Date;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Handle the creation and fetching methods of JWT
- */
+/** Handle the creation and fetching methods of JWT */
 @Service
-@Component
 public class JwtAuthenticationService {
     private static final long TOKEN_EXPIRATION_TIME = TimeUnit.HOURS.toMillis(24);
     private static final String TOKEN_PREFIX = "Bearer ";
