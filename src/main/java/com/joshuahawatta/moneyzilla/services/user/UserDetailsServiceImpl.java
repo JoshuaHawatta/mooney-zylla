@@ -13,8 +13,11 @@ import java.util.Optional;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
-    @Autowired
     UserRepository repository;
+
+    public UserDetailsServiceImpl(UserRepository userRepository) {
+        this.repository = userRepository;
+    }
 
     private static final String ACCOUNT_NOT_FOUND_MESSAGE = "Conta não encontrada!";
 

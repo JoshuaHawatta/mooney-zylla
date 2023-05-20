@@ -29,6 +29,13 @@
 	</properties>
 
 	<dependencies>
+		<!--DATA_BIND-->
+		<dependency>
+			<groupId>javax.xml.bind</groupId>
+			<artifactId>jaxb-api</artifactId>
+			<version>2.4.0-b180830.0359</version>
+		</dependency>
+
 		<!--SPRING_BOOT_DEPENDENCIES-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

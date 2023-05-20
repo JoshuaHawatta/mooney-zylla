@@ -1,8 +1,11 @@
 package com.joshuahawatta.moneyzilla.configurations.security;
 
 import com.joshuahawatta.moneyzilla.configurations.security.jwt.JwtAuthenticationFilter;
+import com.joshuahawatta.moneyzilla.configurations.security.jwt.JwtAuthenticationService;
 import com.joshuahawatta.moneyzilla.configurations.security.jwt.JwtLoginFilter;
+import com.joshuahawatta.moneyzilla.repositories.UserRepository;
 import com.joshuahawatta.moneyzilla.services.user.UserDetailsServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,6 +26,12 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 public class WebConfigSecurity {
     public static final String LOGIN_ROUTE = "/user/login";
 
+    @Autowired
+    JwtAuthenticationService authenticationService;
+
+    @Autowired
+    UserRepository userRepository;
+
     /** @return a new BCryptPasswordEncoder */
     @Bean
     public PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(); }
@@ -35,7 +44,7 @@ public class WebConfigSecurity {
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
 
-        authProvider.setUserDetailsService(new UserDetailsServiceImpl());
+        authProvider.setUserDetailsService(new UserDetailsServiceImpl(userRepository));
         authProvider.setPasswordEncoder(passwordEncoder());
 
         return authProvider;
@@ -68,6 +77,8 @@ public class WebConfigSecurity {
      */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http.authenticationProvider(authenticationProvider());
+
         http.cors().and()
             .csrf()
             .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
@@ -81,11 +92,12 @@ public class WebConfigSecurity {
             .logoutSuccessUrl(LOGIN_ROUTE)
             .logoutRequestMatcher(new AntPathRequestMatcher("/user/logout"))
             .and()
-            .addFilterBefore(new JwtLoginFilter(LOGIN_ROUTE, this.authenticationConfiguration().getAuthenticationManager()), UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(
+                new JwtLoginFilter(LOGIN_ROUTE, this.authenticationConfiguration().getAuthenticationManager(), authenticationService),
+                UsernamePasswordAuthenticationFilter.class
+            )
             .addFilterBefore(new JwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
             .httpBasic();
-
-        http.authenticationProvider(authenticationProvider());
 
         return http.build();
     }
