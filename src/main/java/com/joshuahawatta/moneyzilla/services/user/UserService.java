@@ -1,7 +1,7 @@
 package com.joshuahawatta.moneyzilla.services.user;
 
 import com.joshuahawatta.moneyzilla.dtos.user.UserDto;
-import com.joshuahawatta.moneyzilla.configurations.Validations;
+import com.joshuahawatta.moneyzilla.configurations.validations.Validations;
 import com.joshuahawatta.moneyzilla.models.Users;
 import com.joshuahawatta.moneyzilla.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

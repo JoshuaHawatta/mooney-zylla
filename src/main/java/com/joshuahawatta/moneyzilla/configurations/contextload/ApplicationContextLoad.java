@@ -1,4 +1,4 @@
-package com.joshuahawatta.moneyzilla.configurations;
+package com.joshuahawatta.moneyzilla.configurations.contextload;
 
 import io.micrometer.common.lang.NonNull;
 import org.springframework.beans.BeansException;

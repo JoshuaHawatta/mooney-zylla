@@ -1,4 +1,4 @@
-package com.joshuahawatta.moneyzilla.configurations;
+package com.joshuahawatta.moneyzilla.configurations.database;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.jdbc.DataSourceBuilder;
@@ -7,9 +7,7 @@ import org.springframework.context.annotation.Configuration;
 
 import javax.sql.DataSource;
 
-/**
- * Values loaded from resources.application.properties file. There, the .env variables are loaded.
- */
+/** Values loaded from resources.application.properties file. There, the .env variables are loaded. */
 @Configuration
 public class Database {
     @Value("${DB.url}")
@@ -21,9 +19,7 @@ public class Database {
     @Value("${DB.password}")
     private String password;
 
-    /**
-     * @return a new DataSource that´ll connect to the database.
-     */
+    /** @return a new DataSource that´ll connect to the database. */
     @Bean
     public DataSource dataSource() {
         DataSourceBuilder<?> dataSource = DataSourceBuilder.create();
