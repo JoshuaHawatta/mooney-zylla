@@ -5,7 +5,6 @@ import com.joshuahawatta.moneyzilla.configurations.security.jwt.JwtAuthenticatio
 import com.joshuahawatta.moneyzilla.configurations.security.jwt.JwtLoginFilter;
 import com.joshuahawatta.moneyzilla.repositories.UserRepository;
 import com.joshuahawatta.moneyzilla.services.user.UserDetailsServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,13 +23,21 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @Configuration
 @EnableWebSecurity
 public class WebConfigSecurity {
-    public static final String LOGIN_ROUTE = "/user/login";
+    private static final String LOGIN_ROUTE = "/user/login";
 
-    @Autowired
-    JwtAuthenticationService authenticationService;
+    //Dependencies that require injections
+    private final UserRepository userRepository;
+    private final JwtAuthenticationService jwtAuthenticationService;
 
-    @Autowired
-    UserRepository userRepository;
+    /**
+     * Resolving dependency injection
+     * @param jwtAuthenticationService for using authentication methods
+     * @param userRepository for using findByUsername method
+     */
+    public WebConfigSecurity(JwtAuthenticationService jwtAuthenticationService, UserRepository userRepository) {
+        this.jwtAuthenticationService = jwtAuthenticationService;
+        this.userRepository = userRepository;
+    }
 
     /** @return a new BCryptPasswordEncoder */
     @Bean
@@ -93,10 +100,14 @@ public class WebConfigSecurity {
             .logoutRequestMatcher(new AntPathRequestMatcher("/user/logout"))
             .and()
             .addFilterBefore(
-                new JwtLoginFilter(LOGIN_ROUTE, this.authenticationConfiguration().getAuthenticationManager(), authenticationService),
+                new JwtLoginFilter(
+                    LOGIN_ROUTE, this.authenticationConfiguration().getAuthenticationManager(), jwtAuthenticationService
+                ),
+                UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(
+                new JwtAuthenticationFilter(userRepository, jwtAuthenticationService),
                 UsernamePasswordAuthenticationFilter.class
             )
-            .addFilterBefore(new JwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
             .httpBasic();
 
         return http.build();

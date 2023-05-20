@@ -5,8 +5,6 @@ import com.joshuahawatta.moneyzilla.models.Users;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -18,7 +16,7 @@ import java.io.IOException;
 
 /** Stabilishes the Token managment/manager */
 public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {
-    JwtAuthenticationService service;
+    private final JwtAuthenticationService service;
 
     /**
      * Oblige the constructor to always authenticate URL.

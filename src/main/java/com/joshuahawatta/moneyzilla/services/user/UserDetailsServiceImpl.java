@@ -2,24 +2,23 @@ package com.joshuahawatta.moneyzilla.services.user;
 
 import com.joshuahawatta.moneyzilla.models.Users;
 import com.joshuahawatta.moneyzilla.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
 import java.util.Optional;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
-    UserRepository repository;
-
-    public UserDetailsServiceImpl(UserRepository userRepository) {
-        this.repository = userRepository;
-    }
-
     private static final String ACCOUNT_NOT_FOUND_MESSAGE = "Conta não encontrada!";
+    private final UserRepository repository;
+
+    /**
+     * Resolving dependency injection
+     * @param userRepository for using the findByEmail method
+     */
+    public UserDetailsServiceImpl(UserRepository userRepository) { this.repository = userRepository; }
 
     /**
      * @param username used for founding the user on the database by it´s e-mail.

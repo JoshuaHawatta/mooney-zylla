@@ -1,6 +1,5 @@
 package com.joshuahawatta.moneyzilla.configurations.security.jwt;
 
-import com.joshuahawatta.moneyzilla.configurations.contextload.ApplicationContextLoad;
 import com.joshuahawatta.moneyzilla.models.Users;
 import com.joshuahawatta.moneyzilla.repositories.UserRepository;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -9,7 +8,6 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SignatureException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,12 +23,13 @@ public class JwtAuthenticationService {
     private static final long TOKEN_EXPIRATION_TIME = TimeUnit.HOURS.toMillis(24);
     private static final String TOKEN_PREFIX = "Bearer ";
     private static final String HEADER_PREFIX = "Authorization";
+    private final UserRepository userRepository;
 
-    @Value("$jwt.secret")
+    @Value("${jsonwebtoken.secret}")
     private String jwtSecret;
 
-    @Autowired
-    ApplicationContextLoad appContextLoad;
+    /** Handling dependency injection */
+    public JwtAuthenticationService(UserRepository userRepository) { this.userRepository = userRepository; }
 
     /**
      * Create a JWT, writing it also on the header of the requests and on the responses.
@@ -39,6 +38,8 @@ public class JwtAuthenticationService {
      * @throws IOException when neither the token was able to add on header or write at response.
      */
     public void generateToken(HttpServletResponse res, String userName) throws IOException {
+        res.setContentType("application/json");
+
         final String JWT = Jwts.builder()
             .setSubject(userName)
             .setExpiration(new Date(System.currentTimeMillis() + TOKEN_EXPIRATION_TIME))
@@ -50,8 +51,8 @@ public class JwtAuthenticationService {
         //WRITE_TOKEN_ON_HEADERS_OF_REQUESTS
         res.addHeader(HEADER_PREFIX, BEARER_TOKEN);
 
-        //WRITE_TOKEN_AS_JSON_ASWELL
-        res.getWriter().write("{\"Authorization\": \"" +  BEARER_TOKEN + "\"}");
+        //SEND_TOKEN_ON_RESPONSE
+        res.getWriter().write("{\"token\": \"" +  BEARER_TOKEN + "\"}");
     }
 
     /**
@@ -70,10 +71,7 @@ public class JwtAuthenticationService {
                 .getSubject();
 
             if(userToken != null) {
-                Optional<Users> user = appContextLoad
-                    .getApplicationContext()
-                    .getBean(UserRepository.class)
-                    .findByEmail(userToken);
+                Optional<Users> user = userRepository.findByEmail(userToken);
 
                 if(user.isPresent()) {
                     Users foundUser = user.get();
