@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
  * An abstract class for handling ResponseEntity<TypeHere> returns.
  * @param <T> for handling multiple return cases
  */
-public abstract sealed class Response<T> permits ResponseResult, ResponseResultWIthMessage {
+public abstract class Response<T> {
     protected Integer statusCode;
     protected T result;
 
