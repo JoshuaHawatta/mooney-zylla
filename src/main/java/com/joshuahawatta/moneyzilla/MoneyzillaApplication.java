@@ -6,8 +6,5 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 
 @SpringBootApplication(exclude = { SecurityAutoConfiguration.class })
 public class MoneyzillaApplication {
-	public static void main(String[] args) {
-		SpringApplication.run(MoneyzillaApplication.class, args);
-		System.out.println("Buildei com Docker DE NOVOOOO, quase gozei");
-	}
+	public static void main(String[] args) { SpringApplication.run(MoneyzillaApplication.class, args); }
 }

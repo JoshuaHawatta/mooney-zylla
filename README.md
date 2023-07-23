@@ -18,7 +18,7 @@ Para rodar o projeto, digite o comando:
 mvn clean package
 ```
 
-Esse comando sempre deve ser rodado toda vez que seu projeto é salvo ou atualiza, para que o Docker compile a versão mais recente!
+Esse comando sempre deve ser rodado toda vez que seu projeto é salvo ou atualizado, para que o Docker compile a versão mais recente!
 Em seguida, digite:
 
 ```
