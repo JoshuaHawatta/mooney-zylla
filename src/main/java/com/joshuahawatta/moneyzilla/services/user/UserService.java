@@ -1,21 +1,21 @@
 package com.joshuahawatta.moneyzilla.services.user;
 
+import com.joshuahawatta.moneyzilla.configurations.security.JwtService;
+import com.joshuahawatta.moneyzilla.dtos.user.CreateAccountDto;
 import com.joshuahawatta.moneyzilla.dtos.user.UserDto;
 import com.joshuahawatta.moneyzilla.configurations.validations.Validations;
 import com.joshuahawatta.moneyzilla.models.Users;
 import com.joshuahawatta.moneyzilla.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
-/**
- * Implementing UserDetailsService for handling user authorizations, finding by username method, etc...
- */
 @Service
 public class UserService {
     private static final String INVALID_ID_MESSAGE = "ID inválido!";
@@ -29,7 +29,13 @@ public class UserService {
     PasswordEncoder encoder;
 
     @Autowired
+    AuthenticationManager authenticationManager;
+
+    @Autowired
     Validations validations;
+
+    @Autowired
+    JwtService jwtService;
 
     /**
      * @return a list of UserDtos. If the list is empty, only return the empty arrays with no errors.
@@ -51,7 +57,7 @@ public class UserService {
     public UserDto findById(Long id) {
         if(id == null || id <= 0) throw new IllegalArgumentException(INVALID_ID_MESSAGE);
 
-        Optional<Users> user = repository.findById(id);
+        var user = repository.findById(id);
 
         if (user.isEmpty()) throw new NullPointerException(ACCOUNT_NOT_FOUND_MESSAGE);
 
@@ -59,56 +65,75 @@ public class UserService {
     }
 
     /**
-     * @param users passing the whole Users class as param, we can validate the whole data when the user tries to login.
-     * @return an UserDto so we can validate his data after it.
+     * @param users passing the whole Users class as param, we can validate the whole data when the user tries to log in.
+     * @return a Map so we can return the user data and his new JWT.
      * @throws IllegalArgumentException when there´s missing content or the validations has failed.
      * @throws NullPointerException when the user account wasn´t able to be found.
      * @throws AccessDeniedException when the user´s password ain´t the same as the account registered on the database.
      */
-    public UserDto login(Users users) {
-        if(users.getEmail() == null || users.getEmail().isBlank())
+    public Map<String, Object> login(Users users) {
+        if (users.getEmail() == null || users.getEmail().isBlank())
             throw new IllegalArgumentException("E-mail obrigatório!");
-        else if(users.getPassword() == null || users.getPassword().isBlank())
+        else if (users.getPassword() == null || users.getPassword().isBlank())
             throw new IllegalArgumentException("Senha obrigatória!");
 
-        Optional<Users> existingUser = repository.findByEmail(users.getEmail().trim());
+        var authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(users.getEmail(), users.getPassword())
+        );
+        var existingUser = repository.findByEmail(authentication.getName());
+        Map<String, Object> results = new HashMap<>();
 
-        if (existingUser.isEmpty()) throw new NullPointerException(ACCOUNT_NOT_FOUND_MESSAGE);
+        try {
+            if (existingUser.isEmpty()) throw new NullPointerException("Usuário não encontrado!");
 
-        Users foundUsers = existingUser.get();
+            results.put("user", existingUser.get());
+            results.put("token", jwtService.generateToken(existingUser.get()));
 
-        if(!encoder.matches(users.getPassword(), foundUsers.getPassword()))
-            throw new AccessDeniedException("A senha digitada não é a mesma cadastrada!");
-
-        return new UserDto(foundUsers);
+            return results;
+        } catch (AuthenticationException e) {
+            throw new AccessDeniedException("E-mail ou senha inválidos!");
+        }
     }
 
     /**
-     * @param users for creating an account and already return the results.
-     * @return an UserDto, so when the user creates an account, we can validate his data.
+     * @param user for creating an account and already return the results.
+     * @return a hashed map, so when the user creates an account, we can get his data and a new JWT.
      * @throws IllegalArgumentException when there´s missing content.
      */
-    public UserDto save(Users users) {
-        validations.validate(users);
-        if(users.getName().equals(users.getPassword())) throw new IllegalArgumentException(PASSWORD_EQUALS_NAME_MESSAGE);
+    public Map<String, Object> save(CreateAccountDto user) {
+        validations.validate(user);
+        var existingAccount = repository.findByEmail(user.getEmail());
 
-        Users newUsers = new Users(
-            users.getName().trim(),
-            users.getEmail().trim(),
-            encoder.encode(users.getPassword().trim()),
-            users.getMoney()
+        if(existingAccount.isPresent()) throw new IllegalArgumentException("Um usuário já está usando esse e-mail!");
+        else if(user.getName().equals(user.getPassword()))
+            throw new IllegalArgumentException(PASSWORD_EQUALS_NAME_MESSAGE);
+        else if(user.getPassword() == null || user.getPassword().isBlank())
+            throw new IllegalArgumentException("Digite uma senha válida!");
+        else if(!user.getConfirmPassword().equals(user.getPassword()))
+            throw new IllegalArgumentException("As senhas não são iguais!");
+
+        var newAccount = new Users(
+            user.getName().trim(),
+            user.getEmail().trim(),
+            encoder.encode(user.getPassword().trim()),
+            user.getMoney()
         );
 
-        repository.save(newUsers);
+        repository.save(newAccount);
 
-        return new UserDto(newUsers);
+        Map<String, Object> results = new HashMap<>();
+
+        results.put("user", new UserDto(newAccount));
+        results.put("token", jwtService.generateToken(newAccount));
+
+        return results;
     }
 
     /**
      * @param id needs an id for founding the user.
-     * @param users an Users entity model type as parameter aswell.
+     * @param users a Users entity model type as parameter aswell.
      * @return an UserDto, so when the user update his data, he already recives it back.
-     * @throws IllegalArgumentException when the validations does not pass or there´s missing content.
+     * @throws IllegalArgumentException when the validations do not pass or there´s missing content.
      */
     public UserDto update(Long id, Users users) {
         if(id == null || id <= 0) throw new IllegalArgumentException(INVALID_ID_MESSAGE);
@@ -126,7 +151,7 @@ public class UserService {
         foundUsers.setName(users.getName().trim());
         foundUsers.setEmail(users.getEmail().trim());
         foundUsers.setPassword(encoder.encode(users.getPassword().trim()));
-        foundUsers.setMoney(new BigDecimal("" + users.getMoney() + ""));
+        foundUsers.setMoney(new BigDecimal(users.getMoney().toString()));
 
         repository.save(foundUsers);
 

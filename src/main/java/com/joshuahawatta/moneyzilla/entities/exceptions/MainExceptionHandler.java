@@ -1,5 +1,6 @@
 package com.joshuahawatta.moneyzilla.entities.exceptions;
 
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.joshuahawatta.moneyzilla.entities.responses.Response;
 import com.joshuahawatta.moneyzilla.entities.responses.ResponseResult;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,11 @@ public class MainExceptionHandler {
     //DENIED_ACESS_ERROR_HANDLER
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<Response<String>> handleServerError(AccessDeniedException exception) {
+        return Response.sendResponse(new ResponseResult<>(403, exception.getMessage()));
+    }
+
+    @ExceptionHandler(TokenExpiredException.class)
+    public ResponseEntity<Response<String>> handleTokenExpiredError(TokenExpiredException exception) {
         return Response.sendResponse(new ResponseResult<>(403, exception.getMessage()));
     }
 }

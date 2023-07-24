@@ -2,7 +2,10 @@ version: '3'
 
 services:
   moneyzilla_app:
+    container_name: moneyzilla_app
     restart: always
+    env_file:
+      - .env
     build: .
     command: java -jar target/app.jar
     volumes:

@@ -2,11 +2,11 @@ package com.joshuahawatta.moneyzilla.models;
 
 import com.joshuahawatta.moneyzilla.entities.baseentitymodel.BaseEntityModel;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import org.hibernate.annotations.ColumnDefault;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import java.io.Serial;
 import java.math.BigDecimal;
@@ -30,9 +30,7 @@ public class Users extends BaseEntityModel implements UserDetails {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @NotBlank(message = "E-mail obrigatório!")
-    @Email(message = "E-mail inválido!")
-    @Column(name = "email", nullable = false, unique = true)
+    @Column(name = "email", nullable = false)
     private String email;
 
     @NotBlank(message = "Senha obrigatória!")
@@ -48,31 +46,6 @@ public class Users extends BaseEntityModel implements UserDetails {
     private List<Billing> billings = new ArrayList<>();
 
     /**
-     * Creating join table rules that are made of the users ids and roles ids
-     */
-    @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true)
-    @JoinTable(
-        name = "user_roles",
-        uniqueConstraints =  @UniqueConstraint(columnNames = { "users_id", "roles_id" }, name = "unique_user_role"),
-
-        joinColumns = @JoinColumn(
-            name                 =  "users_id",
-            referencedColumnName = "id",
-            table                = "users",
-            foreignKey           = @ForeignKey(name = "users_fk", value = ConstraintMode.CONSTRAINT)
-        ),
-
-        inverseJoinColumns = @JoinColumn(
-            name                 = "roles_id",
-            referencedColumnName = "id",
-            table                = "roles",
-            foreignKey           = @ForeignKey(name = "roles_fk", value = ConstraintMode.CONSTRAINT),
-            updatable            = false
-        )
-    )
-    private List<Roles> roles;
-
-    /**
      * Constructor overloads
      */
     public Users() {}
@@ -81,7 +54,7 @@ public class Users extends BaseEntityModel implements UserDetails {
         this.name = name;
         this.email = email;
         this.password = password;
-        this.money = money != null ? new BigDecimal("" + money + "") : BigDecimal.valueOf(0.00);
+        this.money = money != null ? new BigDecimal(money.toString()) : BigDecimal.valueOf(0.00);
     }
 
     /**
@@ -89,7 +62,7 @@ public class Users extends BaseEntityModel implements UserDetails {
      */
     @Override
     public String toString() {
-        return String.format("- %d = [ %s, %f, %s, %s]", id, name, money, email, billings.toString());
+        return String.format("- %d = [ %s, %f, %s, %s]", id, name, money, email, billings);
     }
 
     @Override
@@ -130,15 +103,11 @@ public class Users extends BaseEntityModel implements UserDetails {
 
     public void setBillings(List<Billing> billings) { this.billings = billings; }
 
-    public List<Roles> getRoles() { return roles; }
-
-    public void setRoles(List<Roles> roles) { this.roles = roles; }
-
     /**
      * Users authorizations list. Example: ROLE_ADMIN or ROLE_USER
      */
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() { return this.roles; }
+    public Collection<? extends GrantedAuthority> getAuthorities() { return List.of(new SimpleGrantedAuthority("USER_ROLE")); }
 
     /**
      * UserDetails interface methods (DO NOT remove the others email and password getters e setters).

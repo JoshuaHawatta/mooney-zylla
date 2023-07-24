@@ -1,5 +1,6 @@
 package com.joshuahawatta.moneyzilla.controllers;
 
+import com.joshuahawatta.moneyzilla.dtos.user.CreateAccountDto;
 import com.joshuahawatta.moneyzilla.dtos.user.UserDto;
 import com.joshuahawatta.moneyzilla.entities.responses.Response;
 import com.joshuahawatta.moneyzilla.entities.responses.ResponseResult;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/user")
@@ -23,36 +25,36 @@ public class UserController {
         return Response.sendResponse(new ResponseResult<>(200, service.findAll()));
     }
 
-    @GetMapping(value = "{id}")
-    public ResponseEntity<Response<UserDto>> findById(@PathVariable Long id) {
-        return Response.sendResponse(new ResponseResult<>(200, service.findById(id)));
-    }
-
-    @PostMapping(value = "login")
-    public ResponseEntity<Response<UserDto>> findByEmail(@RequestBody Users users) {
-        return Response.sendResponse(new ResponseResult<>(200, service.login(users)));
-    }
-
-    @PostMapping(value = "register")
-    public ResponseEntity<Response<UserDto>> save(@RequestBody Users users) {
-        UserDto newUser = service.save(users);
+    @PostMapping
+    public ResponseEntity<Response<Map<String, Object>>> save(@RequestBody CreateAccountDto users) {
+        Map<String, Object> results = service.save(users);
 
         return Response.sendResponse(
-            new ResponseResultWIthMessage<>(201, newUser, "Olá, " + newUser.getName() + "!")
+                new ResponseResultWIthMessage<>(201, results, "Olá! È muito bom te ver aqui!")
         );
     }
 
-    @PostMapping(value = "update/{id}")
+    @PatchMapping(value = "{id}")
     public ResponseEntity<Response<UserDto>> updateAccount(@PathVariable Long id, @RequestBody Users users) {
         UserDto newUser = service.update(id, users);
 
         return Response.sendResponse(new ResponseResult<>(201, newUser));
     }
 
-    @DeleteMapping(value = "deleteaccount/{id}")
+    @DeleteMapping(value = "{id}")
     public ResponseEntity<Response<String>> deleteAccount(@PathVariable Long id) {
         service.deleteById(id);
 
         return Response.sendResponse(new ResponseResult<>(200, "Até mais, obrigado pelos peixes!"));
+    }
+
+    @GetMapping(value = "{id}")
+    public ResponseEntity<Response<UserDto>> findById(@PathVariable Long id) {
+        return Response.sendResponse(new ResponseResult<>(200, service.findById(id)));
+    }
+
+    @PostMapping("login")
+    public ResponseEntity<Response<Map<String, Object>>> findByEmail(@RequestBody Users users) {
+        return Response.sendResponse(new ResponseResult<>(200, service.login(users)));
     }
 }
