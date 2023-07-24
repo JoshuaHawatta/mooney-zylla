@@ -1,6 +1,6 @@
 package com.joshuahawatta.moneyzilla.repositories;
 
-import com.joshuahawatta.moneyzilla.models.Users;
+import com.joshuahawatta.moneyzilla.entities.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 

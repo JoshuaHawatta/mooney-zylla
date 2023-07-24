@@ -1,11 +1,17 @@
 package com.joshuahawatta.moneyzilla.dtos.user;
 
-import com.joshuahawatta.moneyzilla.models.Billing;
-import com.joshuahawatta.moneyzilla.models.Users;
+import com.joshuahawatta.moneyzilla.entities.Billing;
+import com.joshuahawatta.moneyzilla.entities.Users;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Objects;
 
+@Getter @Setter
+@EqualsAndHashCode
+@ToString
 public class UserDto {
     private Long id;
     private String name;
@@ -13,50 +19,11 @@ public class UserDto {
     private BigDecimal money;
     private List<Billing> billings;
 
-    public UserDto(Users users) {
-        this.id = users.getId();
-        this.name = users.getName();
-        this.email = users.getEmail();
-        this.money = users.getMoney();
-        this.billings = users.getBillings();
+    public UserDto(Users user) {
+        this.id = user.getId();
+        this.name = user.getName();
+        this.email = user.getEmail();
+        this.money = user.getMoney();
+        this.billings = user.getBillings();
     }
-
-    /**
-     * Class main methods
-     */
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        UserDto userDto = (UserDto) o;
-
-        return Objects.equals(id, userDto.id) && Objects.equals(name, userDto.name) && Objects.equals(email, userDto.email) && Objects.equals(money, userDto.money) && Objects.equals(billings, userDto.billings);
-    }
-
-    @Override
-    public int hashCode() { return Objects.hash(id, name, email, money, billings); }
-
-    /**
-     * Getters and setters
-     */
-    public Long getId() { return id; }
-
-    public void setId(Long id) { this.id = id; }
-
-    public String getName() { return name; }
-
-    public void setName(String name) { this.name = name; }
-
-    public String getEmail() { return email; }
-
-    public void setEmail(String email) { this.email = email; }
-
-    public BigDecimal getMoney() { return money; }
-
-    public void setMoney(BigDecimal money) { this.money = money; }
-
-    public List<Billing> getBillings() { return billings; }
-
-    public void setBillings(List<Billing> billings) { this.billings = billings; }
 }

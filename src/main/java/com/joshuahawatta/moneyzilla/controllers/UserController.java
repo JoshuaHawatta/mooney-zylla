@@ -2,10 +2,10 @@ package com.joshuahawatta.moneyzilla.controllers;
 
 import com.joshuahawatta.moneyzilla.dtos.user.CreateAccountDto;
 import com.joshuahawatta.moneyzilla.dtos.user.UserDto;
-import com.joshuahawatta.moneyzilla.entities.responses.Response;
-import com.joshuahawatta.moneyzilla.entities.responses.ResponseResult;
-import com.joshuahawatta.moneyzilla.entities.responses.ResponseResultWIthMessage;
-import com.joshuahawatta.moneyzilla.models.Users;
+import com.joshuahawatta.moneyzilla.helpers.responses.Response;
+import com.joshuahawatta.moneyzilla.helpers.responses.ResponseResult;
+import com.joshuahawatta.moneyzilla.helpers.responses.ResponseResultWIthMessage;
+import com.joshuahawatta.moneyzilla.entities.Users;
 import com.joshuahawatta.moneyzilla.services.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

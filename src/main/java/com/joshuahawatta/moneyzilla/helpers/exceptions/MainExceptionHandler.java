@@ -1,8 +1,8 @@
-package com.joshuahawatta.moneyzilla.entities.exceptions;
+package com.joshuahawatta.moneyzilla.helpers.exceptions;
 
 import com.auth0.jwt.exceptions.TokenExpiredException;
-import com.joshuahawatta.moneyzilla.entities.responses.Response;
-import com.joshuahawatta.moneyzilla.entities.responses.ResponseResult;
+import com.joshuahawatta.moneyzilla.helpers.responses.Response;
+import com.joshuahawatta.moneyzilla.helpers.responses.ResponseResult;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;

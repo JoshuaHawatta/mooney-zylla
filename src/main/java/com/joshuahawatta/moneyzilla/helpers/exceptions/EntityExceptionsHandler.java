@@ -1,7 +1,7 @@
-package com.joshuahawatta.moneyzilla.entities.exceptions;
+package com.joshuahawatta.moneyzilla.helpers.exceptions;
 
-import com.joshuahawatta.moneyzilla.entities.responses.Response;
-import com.joshuahawatta.moneyzilla.entities.responses.ResponseResult;
+import com.joshuahawatta.moneyzilla.helpers.responses.Response;
+import com.joshuahawatta.moneyzilla.helpers.responses.ResponseResult;
 import jakarta.validation.ValidationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;

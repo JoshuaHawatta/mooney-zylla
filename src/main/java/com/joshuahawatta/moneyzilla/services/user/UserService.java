@@ -1,15 +1,14 @@
 package com.joshuahawatta.moneyzilla.services.user;
 
+import com.joshuahawatta.moneyzilla.configurations.security.AuthenticationService;
 import com.joshuahawatta.moneyzilla.configurations.security.JwtService;
 import com.joshuahawatta.moneyzilla.dtos.user.CreateAccountDto;
 import com.joshuahawatta.moneyzilla.dtos.user.UserDto;
 import com.joshuahawatta.moneyzilla.configurations.validations.Validations;
-import com.joshuahawatta.moneyzilla.models.Users;
+import com.joshuahawatta.moneyzilla.entities.Users;
 import com.joshuahawatta.moneyzilla.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -26,20 +25,17 @@ public class UserService {
     UserRepository repository;
 
     @Autowired
-    PasswordEncoder encoder;
-
-    @Autowired
-    AuthenticationManager authenticationManager;
-
-    @Autowired
     Validations validations;
+
+    @Autowired
+    PasswordEncoder encoder;
 
     @Autowired
     JwtService jwtService;
 
-    /**
-     * @return a list of UserDtos. If the list is empty, only return the empty arrays with no errors.
-     */
+    @Autowired
+    AuthenticationService authenticationService;
+
     public List<UserDto> findAll() {
         List<UserDto> users = new ArrayList<>();
 
@@ -48,12 +44,6 @@ public class UserService {
         return users;
     }
 
-    /**
-     * @param id for founding the user.
-     * @return an UserDto so we can validate the results.
-     * @throws IllegalArgumentException when there´s missing the id.
-     * @throws NullPointerException when the account wasn´t able to be found.
-     */
     public UserDto findById(Long id) {
         if(id == null || id <= 0) throw new IllegalArgumentException(INVALID_ID_MESSAGE);
 
@@ -64,30 +54,22 @@ public class UserService {
         return new UserDto(user.get());
     }
 
-    /**
-     * @param users passing the whole Users class as param, we can validate the whole data when the user tries to log in.
-     * @return a Map so we can return the user data and his new JWT.
-     * @throws IllegalArgumentException when there´s missing content or the validations has failed.
-     * @throws NullPointerException when the user account wasn´t able to be found.
-     * @throws AccessDeniedException when the user´s password ain´t the same as the account registered on the database.
-     */
-    public Map<String, Object> login(Users users) {
-        if (users.getEmail() == null || users.getEmail().isBlank())
+    public Map<String, Object> login(Users user) {
+        if (user.getEmail() == null || user.getEmail().isBlank())
             throw new IllegalArgumentException("E-mail obrigatório!");
-        else if (users.getPassword() == null || users.getPassword().isBlank())
+        else if (user.getPassword() == null || user.getPassword().isBlank())
             throw new IllegalArgumentException("Senha obrigatória!");
 
-        var authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(users.getEmail(), users.getPassword())
-        );
-        var existingUser = repository.findByEmail(authentication.getName());
+        var foundUser = (Users) authenticationService.loadUserByUsername(user.getEmail());
+
+        if(!encoder.matches(user.getPassword(), foundUser.getPassword()))
+            throw new IllegalArgumentException("As senhas não batem!");
+
         Map<String, Object> results = new HashMap<>();
 
         try {
-            if (existingUser.isEmpty()) throw new NullPointerException("Usuário não encontrado!");
-
-            results.put("user", existingUser.get());
-            results.put("token", jwtService.generateToken(existingUser.get()));
+            results.put("user", new UserDto(foundUser));
+            results.put("token", jwtService.generateToken(foundUser));
 
             return results;
         } catch (AuthenticationException e) {
@@ -95,11 +77,6 @@ public class UserService {
         }
     }
 
-    /**
-     * @param user for creating an account and already return the results.
-     * @return a hashed map, so when the user creates an account, we can get his data and a new JWT.
-     * @throws IllegalArgumentException when there´s missing content.
-     */
     public Map<String, Object> save(CreateAccountDto user) {
         validations.validate(user);
         var existingAccount = repository.findByEmail(user.getEmail());
@@ -129,12 +106,6 @@ public class UserService {
         return results;
     }
 
-    /**
-     * @param id needs an id for founding the user.
-     * @param users a Users entity model type as parameter aswell.
-     * @return an UserDto, so when the user update his data, he already recives it back.
-     * @throws IllegalArgumentException when the validations do not pass or there´s missing content.
-     */
     public UserDto update(Long id, Users users) {
         if(id == null || id <= 0) throw new IllegalArgumentException(INVALID_ID_MESSAGE);
 
@@ -158,11 +129,6 @@ public class UserService {
         return new UserDto(foundUsers);
     }
 
-    /**
-     * @param id for searching the user at database.
-     * @throws IllegalArgumentException when the id is invalid.
-     * @throws NullPointerException when there´s no account to delete on that id.
-     */
     public void deleteById(Long id) {
         if(id == null || id <= 0) throw new IllegalArgumentException(INVALID_ID_MESSAGE);
 
