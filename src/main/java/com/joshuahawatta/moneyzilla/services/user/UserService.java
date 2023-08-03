@@ -6,6 +6,7 @@ import com.joshuahawatta.moneyzilla.dtos.user.CreateAccountDto;
 import com.joshuahawatta.moneyzilla.dtos.user.UserDto;
 import com.joshuahawatta.moneyzilla.configurations.validations.Validations;
 import com.joshuahawatta.moneyzilla.entities.User;
+import com.joshuahawatta.moneyzilla.helpers.Message;
 import com.joshuahawatta.moneyzilla.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
@@ -70,7 +71,7 @@ public class UserService {
         try {
             results.put("user", new UserDto(foundUser));
             results.put("token", jwtService.generateToken(foundUser));
-            results.put("message", String.format("Olá, %s, aproveite a plataforma!", foundUser.getName()));
+            Message.putOnJson(String.format("Bem-vindo, %s!", foundUser.getName()), results);
 
             return results;
         } catch (AuthenticationException e) {
@@ -105,7 +106,7 @@ public class UserService {
 
         results.put("user", new UserDto(newAccount));
         results.put("token", jwtService.generateToken(newAccount));
-        results.put("message", String.format("Olá, %s!", newAccount.getName()));
+        Message.putOnJson(String.format("Bem-vindo, %s!", newAccount.getName()), results);
 
         return results;
     }
