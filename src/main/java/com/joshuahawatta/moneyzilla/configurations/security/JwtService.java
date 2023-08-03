@@ -1,7 +1,7 @@
 package com.joshuahawatta.moneyzilla.configurations.security;
 
 import com.auth0.jwt.algorithms.Algorithm;
-import com.joshuahawatta.moneyzilla.entities.Users;
+import com.joshuahawatta.moneyzilla.entities.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import com.auth0.jwt.JWT;
@@ -14,7 +14,7 @@ public class JwtService {
 
     public JwtService(@Value("${JWT_SECRET}") String jwtSecret) { this.jwtSecret = jwtSecret; }
 
-    public String generateToken(Users user) {
+    public String generateToken(User user) {
         return JWT.create()
                 .withIssuer("Users")
                 .withSubject(user.getUsername())

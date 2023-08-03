@@ -9,7 +9,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Getter @Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
@@ -45,8 +45,8 @@ public class Billing extends BaseEntityModel implements Serializable {
     private LocalDateTime boughtDate;
 
     @ManyToOne
-    @JoinColumn(name = "users_id")
-    private Users users;
+    @JoinColumn(name = "user_id")
+    private User users;
 
     @Override
     public String toString() {

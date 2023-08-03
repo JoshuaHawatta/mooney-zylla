@@ -5,7 +5,7 @@ import com.joshuahawatta.moneyzilla.configurations.security.JwtService;
 import com.joshuahawatta.moneyzilla.dtos.user.CreateAccountDto;
 import com.joshuahawatta.moneyzilla.dtos.user.UserDto;
 import com.joshuahawatta.moneyzilla.configurations.validations.Validations;
-import com.joshuahawatta.moneyzilla.entities.Users;
+import com.joshuahawatta.moneyzilla.entities.User;
 import com.joshuahawatta.moneyzilla.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
@@ -39,7 +39,7 @@ public class UserService {
     public List<UserDto> findAll() {
         List<UserDto> users = new ArrayList<>();
 
-        for (Users user : repository.findAll()) users.add(new UserDto(user));
+        for (User user : repository.findAll()) users.add(new UserDto(user));
 
         return users;
     }
@@ -54,22 +54,23 @@ public class UserService {
         return new UserDto(user.get());
     }
 
-    public Map<String, Object> login(Users user) {
+    public Map<String, Object> login(User user) {
         if (user.getEmail() == null || user.getEmail().isBlank())
             throw new IllegalArgumentException("E-mail obrigatório!");
         else if (user.getPassword() == null || user.getPassword().isBlank())
             throw new IllegalArgumentException("Senha obrigatória!");
 
-        var foundUser = (Users) authenticationService.loadUserByUsername(user.getEmail());
+        var foundUser = (User) authenticationService.loadUserByUsername(user.getEmail());
 
         if(!encoder.matches(user.getPassword(), foundUser.getPassword()))
             throw new IllegalArgumentException("As senhas não batem!");
 
-        Map<String, Object> results = new HashMap<>();
+        var results = new HashMap<String, Object>();
 
         try {
             results.put("user", new UserDto(foundUser));
             results.put("token", jwtService.generateToken(foundUser));
+            results.put("message", String.format("Olá, %s, aproveite a plataforma!", foundUser.getName()));
 
             return results;
         } catch (AuthenticationException e) {
@@ -79,9 +80,11 @@ public class UserService {
 
     public Map<String, Object> save(CreateAccountDto user) {
         validations.validate(user);
+
         var existingAccount = repository.findByEmail(user.getEmail());
 
-        if(existingAccount.isPresent()) throw new IllegalArgumentException("Um usuário já está usando esse e-mail!");
+        if(existingAccount.isPresent())
+            throw new IllegalArgumentException("Um usuário já está usando esse e-mail!");
         else if(user.getName().equals(user.getPassword()))
             throw new IllegalArgumentException(PASSWORD_EQUALS_NAME_MESSAGE);
         else if(user.getPassword() == null || user.getPassword().isBlank())
@@ -89,7 +92,7 @@ public class UserService {
         else if(!user.getConfirmPassword().equals(user.getPassword()))
             throw new IllegalArgumentException("As senhas não são iguais!");
 
-        var newAccount = new Users(
+        var newAccount = new User(
             user.getName().trim(),
             user.getEmail().trim(),
             encoder.encode(user.getPassword().trim()),
@@ -98,45 +101,48 @@ public class UserService {
 
         repository.save(newAccount);
 
-        Map<String, Object> results = new HashMap<>();
+        var results = new HashMap<String, Object>();
 
         results.put("user", new UserDto(newAccount));
         results.put("token", jwtService.generateToken(newAccount));
+        results.put("message", String.format("Olá, %s!", newAccount.getName()));
 
         return results;
     }
 
-    public UserDto update(Long id, Users users) {
+    public UserDto update(Long id, User user) {
         if(id == null || id <= 0) throw new IllegalArgumentException(INVALID_ID_MESSAGE);
 
-        Optional<Users> existingUser = repository.findById(id);
+        var existingUser = repository.findById(id);
 
         if(existingUser.isEmpty()) throw new NullPointerException(ACCOUNT_NOT_FOUND_MESSAGE);
 
-        Users foundUsers = existingUser.get();
+        var foundUser = existingUser.get();
 
-        validations.validate(users);
-        if(users.getName().equals(users.getPassword())) throw new IllegalArgumentException(PASSWORD_EQUALS_NAME_MESSAGE);
-        if(users.getPassword() == null || users.getPassword().isBlank()) throw new IllegalArgumentException("Senha inválida!");
+        validations.validate(user);
 
-        foundUsers.setName(users.getName().trim());
-        foundUsers.setEmail(users.getEmail().trim());
-        foundUsers.setPassword(encoder.encode(users.getPassword().trim()));
-        foundUsers.setMoney(new BigDecimal(users.getMoney().toString()));
+        if(user.getName().equals(user.getPassword()))
+            throw new IllegalArgumentException(PASSWORD_EQUALS_NAME_MESSAGE);
+        else if(user.getPassword() == null || user.getPassword().isBlank())
+            throw new IllegalArgumentException("Senha inválida!");
 
-        repository.save(foundUsers);
+        foundUser.setName(user.getName().trim());
+        foundUser.setEmail(user.getEmail().trim());
+        foundUser.setPassword(encoder.encode(user.getPassword().trim()));
+        foundUser.setMoney(new BigDecimal(user.getMoney().toString()));
 
-        return new UserDto(foundUsers);
+        repository.save(foundUser);
+
+        return new UserDto(foundUser);
     }
 
     public void deleteById(Long id) {
         if(id == null || id <= 0) throw new IllegalArgumentException(INVALID_ID_MESSAGE);
 
-        Optional<Users> existingUser = repository.findById(id);
+        var existingUser = repository.findById(id);
 
         if(existingUser.isEmpty()) throw new NullPointerException(ACCOUNT_NOT_FOUND_MESSAGE);
 
-        Users foundUsers = existingUser.get();
-        repository.deleteById(foundUsers.getId());
+        repository.deleteById(existingUser.get().getId());
     }
 }

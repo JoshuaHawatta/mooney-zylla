@@ -1,15 +1,13 @@
 package com.joshuahawatta.moneyzilla.dtos.user;
 
 import com.joshuahawatta.moneyzilla.entities.Billing;
-import com.joshuahawatta.moneyzilla.entities.Users;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import com.joshuahawatta.moneyzilla.entities.User;
+import lombok.*;
+
 import java.math.BigDecimal;
 import java.util.List;
 
-@Getter @Setter
+@Data
 @EqualsAndHashCode
 @ToString
 public class UserDto {
@@ -19,7 +17,7 @@ public class UserDto {
     private BigDecimal money;
     private List<Billing> billings;
 
-    public UserDto(Users user) {
+    public UserDto(User user) {
         this.id = user.getId();
         this.name = user.getName();
         this.email = user.getEmail();

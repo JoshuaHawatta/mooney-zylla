@@ -4,12 +4,11 @@ import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 
-@Getter @Setter
+@Data
 @MappedSuperclass
 public abstract class BaseEntityModel {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")

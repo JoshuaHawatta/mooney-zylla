@@ -14,12 +14,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-@Getter @Setter
-@EqualsAndHashCode(callSuper = false)
+@Data
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper = false)
 @Entity
 @Table(name = "users")
-public class Users extends BaseEntityModel implements UserDetails {
+public class User extends BaseEntityModel implements UserDetails {
     @Serial
     private static final long serialVersionUID = 1L;
 
@@ -47,7 +47,7 @@ public class Users extends BaseEntityModel implements UserDetails {
     @OneToMany(mappedBy = "users", fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Billing> billings = new ArrayList<>();
 
-    public Users(String name, String email, String password, BigDecimal money) {
+    public User(String name, String email, String password, BigDecimal money) {
         this.name = name;
         this.email = email;
         this.password = password;
@@ -55,12 +55,10 @@ public class Users extends BaseEntityModel implements UserDetails {
     }
 
     @Override
-    public String toString() {
-        return String.format("- %d = [ %s, %f, %s, %s]", id, name, money, email, billings);
-    }
+    public Collection<? extends GrantedAuthority> getAuthorities() { return List.of(new SimpleGrantedAuthority("USER_ROLE")); }
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() { return List.of(new SimpleGrantedAuthority("USER_ROLE")); }
+    public String getPassword() { return this.password; }
 
     @Override
     public String getUsername() { return this.email; }
