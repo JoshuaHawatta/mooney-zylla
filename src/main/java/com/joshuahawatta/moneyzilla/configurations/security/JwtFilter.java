@@ -33,15 +33,12 @@ public class JwtFilter extends OncePerRequestFilter {
             token = authorization.replace("Bearer ", "");
 
             var subject = service.getTokenSubject(token);
-            var user = repository.findByEmail(subject);
+            var user = repository.findByEmail(subject)
+                    .orElseThrow(() -> new NullPointerException("Você não está autenticado!"));
 
-            if(user.isEmpty())
-                throw new NullPointerException("Você não está autenticado! Faça o login e tente de novo.");
+            var auth = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
 
-            var authentication = new UsernamePasswordAuthenticationToken(
-                    user.get(), null, user.get().getAuthorities());
-
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            SecurityContextHolder.getContext().setAuthentication(auth);
         }
 
         nextFilter.doFilter(req, res);

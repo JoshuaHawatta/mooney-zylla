@@ -16,11 +16,7 @@ public class AuthenticationService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         if(username == null || username.isBlank()) throw new IllegalArgumentException("E-mail obrigatório!");
 
-        var user = repository.findByEmail(username);
-
-        if(user.isEmpty())
-            throw new NullPointerException("Não achamos nenhum mochileiro que use essa identificação!");
-
-        return user.get();
+        return repository.findByEmail(username)
+                .orElseThrow(() -> new NullPointerException("Não achamos o usuário deste e-mail!"));
     }
 }

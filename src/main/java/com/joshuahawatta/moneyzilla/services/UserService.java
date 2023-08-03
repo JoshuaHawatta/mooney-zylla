@@ -82,22 +82,22 @@ public class UserService {
     public Map<String, Object> save(CreateAccountDto user) {
         validations.validate(user);
 
-        var existingAccount = repository.findByEmail(user.getEmail());
-
-        if(existingAccount.isPresent())
+        repository.findByEmail(user.email()).ifPresent(account -> {
             throw new IllegalArgumentException("Um usuário já está usando esse e-mail!");
-        else if(user.getName().equals(user.getPassword()))
+        });
+
+        if(user.name().equals(user.password()))
             throw new IllegalArgumentException(PASSWORD_EQUALS_NAME_MESSAGE);
-        else if(user.getPassword() == null || user.getPassword().isBlank())
+        else if(user.password() == null || user.password().isBlank())
             throw new IllegalArgumentException("Digite uma senha válida!");
-        else if(!user.getConfirmPassword().equals(user.getPassword()))
+        else if(!user.confirmPassword().equals(user.password()))
             throw new IllegalArgumentException("As senhas não são iguais!");
 
         var newAccount = new User(
-            user.getName().trim(),
-            user.getEmail().trim(),
-            encoder.encode(user.getPassword().trim()),
-            user.getMoney()
+            user.name().trim(),
+            user.email().trim(),
+            encoder.encode(user.password().trim()),
+            user.money()
         );
 
         repository.save(newAccount);
@@ -114,36 +114,32 @@ public class UserService {
     public UserDto update(Long id, User user) {
         if(id == null || id <= 0) throw new IllegalArgumentException(INVALID_ID_MESSAGE);
 
-        var existingUser = repository.findById(id);
-
-        if(existingUser.isEmpty()) throw new NullPointerException(ACCOUNT_NOT_FOUND_MESSAGE);
-
-        var foundUser = existingUser.get();
-
         validations.validate(user);
+
+        var existingUser = repository.findById(id)
+                .orElseThrow(() -> new NullPointerException(ACCOUNT_NOT_FOUND_MESSAGE));
 
         if(user.getName().equals(user.getPassword()))
             throw new IllegalArgumentException(PASSWORD_EQUALS_NAME_MESSAGE);
         else if(user.getPassword() == null || user.getPassword().isBlank())
             throw new IllegalArgumentException("Senha inválida!");
 
-        foundUser.setName(user.getName().trim());
-        foundUser.setEmail(user.getEmail().trim());
-        foundUser.setPassword(encoder.encode(user.getPassword().trim()));
-        foundUser.setMoney(new BigDecimal(user.getMoney().toString()));
+        existingUser.setName(user.getName().trim());
+        existingUser.setEmail(user.getEmail().trim());
+        existingUser.setPassword(encoder.encode(user.getPassword().trim()));
+        existingUser.setMoney(new BigDecimal(user.getMoney().toString()));
 
-        repository.save(foundUser);
+        repository.save(existingUser);
 
-        return new UserDto(foundUser);
+        return new UserDto(existingUser);
     }
 
     public void deleteById(Long id) {
         if(id == null || id <= 0) throw new IllegalArgumentException(INVALID_ID_MESSAGE);
 
-        var existingUser = repository.findById(id);
+        var existingUser = repository.findById(id)
+                .orElseThrow(() -> new NullPointerException(ACCOUNT_NOT_FOUND_MESSAGE));
 
-        if(existingUser.isEmpty()) throw new NullPointerException(ACCOUNT_NOT_FOUND_MESSAGE);
-
-        repository.deleteById(existingUser.get().getId());
+        repository.deleteById(existingUser.getId());
     }
 }
