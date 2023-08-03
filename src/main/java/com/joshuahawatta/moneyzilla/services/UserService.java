@@ -1,4 +1,4 @@
-package com.joshuahawatta.moneyzilla.services.user;
+package com.joshuahawatta.moneyzilla.services;
 
 import com.joshuahawatta.moneyzilla.configurations.security.AuthenticationService;
 import com.joshuahawatta.moneyzilla.configurations.security.JwtService;

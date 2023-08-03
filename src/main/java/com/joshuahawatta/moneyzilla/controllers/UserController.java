@@ -3,7 +3,7 @@ package com.joshuahawatta.moneyzilla.controllers;
 import com.joshuahawatta.moneyzilla.dtos.user.CreateAccountDto;
 import com.joshuahawatta.moneyzilla.dtos.user.UserDto;
 import com.joshuahawatta.moneyzilla.entities.User;
-import com.joshuahawatta.moneyzilla.services.user.UserService;
+import com.joshuahawatta.moneyzilla.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
