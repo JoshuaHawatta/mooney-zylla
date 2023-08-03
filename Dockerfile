@@ -5,7 +5,7 @@ WORKDIR /usr/src
 
 COPY pom.xml .
 
-#MAKE ALL DEPENDENCIES DOWNLAOD TO ENSURE DOCKER CACHE
+# MAKE ALL DEPENDENCIES DOWNLAOD TO ENSURE DOCKER CACHE
 RUN mvn dependency:go-offline
 
 COPY . ./
@@ -16,7 +16,7 @@ FROM openjdk:17-jdk-alpine
 
 WORKDIR /usr/src
 
-#COPY THE BUILDED PROJECT ON MAVEN IMAGE
+# COPY THE BUILDED PROJECT ON MAVEN IMAGE
 COPY --from=build /usr/src/target/*.jar ./app.jar
 
 EXPOSE 8080

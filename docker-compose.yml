@@ -1,7 +1,43 @@
 version: '3'
 
 services:
-  moneyzilla_app:
+  postgresql:
+    container_name: moneyzilla_pg
+    image: postgres:15
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - usr/src/app/postgres
+    logging:
+      driver: none
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
+    ports:
+      - "6060:5432"
+    networks:
+      - app_network
+
+  pg_admin:
+    container_name: moneyzilla_pg_admin
+    image: dpage/pgadmin4:latest
+    restart: always
+    env_file: .env
+    ports:
+      - '6161:80'
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${DB_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${DB_PASSWORD}
+    depends_on:
+      - postgresql
+    logging:
+      driver: none
+    networks:
+      - app_network
+
+  app:
     container_name: moneyzilla_app
     restart: always
     env_file:
@@ -11,6 +47,8 @@ services:
       - .:/usr/src/app
     ports:
       - "8080:8080"
+    depends_on:
+      - postgresql
     networks:
       - app_network
 networks:
