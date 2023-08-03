@@ -7,9 +7,8 @@ services:
     env_file:
       - .env
     build: .
-    command: java -jar target/app.jar
     volumes:
-      - .:/usr/app
+      - .:/usr/src/app
     ports:
       - "8080:8080"
     networks:
