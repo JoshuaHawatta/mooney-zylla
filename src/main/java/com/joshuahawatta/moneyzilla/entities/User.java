@@ -1,5 +1,6 @@
 package com.joshuahawatta.moneyzilla.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -44,7 +45,8 @@ public class User extends BaseEntityModel implements UserDetails {
     @ColumnDefault("0.00")
     private BigDecimal money;
 
-    @OneToMany(mappedBy = "users", fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(mappedBy = "users", fetch = FetchType.EAGER, orphanRemoval = true)
+    @JsonManagedReference
     private List<Billing> billings = new ArrayList<>();
 
     public User(String name, String email, String password, BigDecimal money) {
