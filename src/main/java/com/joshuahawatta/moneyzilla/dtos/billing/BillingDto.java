@@ -1,13 +1,15 @@
 package com.joshuahawatta.moneyzilla.dtos.billing;
 
 import com.joshuahawatta.moneyzilla.entities.Billing;
-import com.joshuahawatta.moneyzilla.entities.User;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
+@NoArgsConstructor
 @EqualsAndHashCode
 public class BillingDto {
     private Long id;
@@ -16,7 +18,6 @@ public class BillingDto {
     private String description;
     private BigDecimal price;
     private LocalDateTime boughtDate;
-    private User users;
 
     public BillingDto(Billing billing) {
         id = billing.getId();
@@ -25,6 +26,5 @@ public class BillingDto {
         description = billing.getDescription();
         price = billing.getPrice();
         boughtDate = billing.getBoughtDate();
-        users = billing.getUsers();
     }
 }
