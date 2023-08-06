@@ -19,7 +19,9 @@ OBSERVAÇÃO: para rodar o projeto sem Docker, você precisa do Maven no mínimo
 
 Após isso, o projeto deve começar a rodar perfeitamente!
 <br />
-Muito obrigado por ler esse README. Se possível, deixe uma estrela!
+Muito obrigado por ler esse README.
+<br />
+Caso tenha gostado, deixe uma estrela!
 <br />
 <br />
-Vida longa e próspera, e que A Força esteja com você!
+Vida longa e próspera, e que a Força esteja com você!
