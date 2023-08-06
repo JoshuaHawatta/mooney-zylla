@@ -21,8 +21,8 @@ public class BillingController {
 
     @PostMapping
     public ResponseEntity<Map<String, Object>> saveBilling(
-            @RequestBody CreateOrUpdateBillingDto billing,
-            @AuthenticationPrincipal User loggedUser
+            @AuthenticationPrincipal User loggedUser,
+            @RequestBody CreateOrUpdateBillingDto billing
     ) {
         return new ResponseEntity<>(service.save(billing,loggedUser), HttpStatus.CREATED);
     }

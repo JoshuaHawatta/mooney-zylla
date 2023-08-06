@@ -23,8 +23,6 @@ public class BillingService {
     public Map<String, Object> save (CreateOrUpdateBillingDto billing, User loggedUser) {
         validations.validate(billing);
 
-        if (loggedUser == null) throw new NullPointerException("Você não está autenticado, faça seu login!");
-
         var newBilling = new Billing(
                 billing.name(),
                 billing.price(),
