@@ -12,17 +12,17 @@ import java.util.Map;
 @ControllerAdvice
 public class ValidationExceptionHandler {
     @ExceptionHandler(NullPointerException.class)
-    public ResponseEntity<Map<String, String>> handleNotFound(NullPointerException exception) {
+    public ResponseEntity<Map<String, String>> handleNotFoundException(NullPointerException exception) {
         return new ResponseEntity<>(Message.asJson(exception.getMessage()), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<Map<String, String>> handleServerError(AccessDeniedException exception) {
+    public ResponseEntity<Map<String, String>> handleAccessDeniedException(AccessDeniedException exception) {
         return new ResponseEntity<>(Message.asJson(exception.getMessage()), HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(TokenExpiredException.class)
-    public ResponseEntity<Map<String, String>> handleTokenExpiredError(TokenExpiredException exception) {
+    public ResponseEntity<Map<String, String>> handleTokenExpiredException(TokenExpiredException exception) {
         return new ResponseEntity<>(Message.asJson(exception.getMessage()), HttpStatus.UNAUTHORIZED);
     }
 }

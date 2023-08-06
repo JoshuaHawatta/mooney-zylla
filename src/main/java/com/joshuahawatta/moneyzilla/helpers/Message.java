@@ -3,8 +3,7 @@ package com.joshuahawatta.moneyzilla.helpers;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
 
 @Data
@@ -14,11 +13,7 @@ public class Message {
     private String content;
 
     public static Map<String, String> asJson(String content) {
-        var jsonMessage = new HashMap<String, String>();
-
-        jsonMessage.put("message", content);
-
-        return jsonMessage;
+        return Collections.singletonMap("messagge", content);
     }
 
     public static void putOnJson(String content, Map<String, Object> json) {

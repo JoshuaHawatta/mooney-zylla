@@ -29,7 +29,7 @@ public class InternalExceptionHandler {
         return new ResponseEntity<>(Message.asJson(SERVER_ERROR_MESSAGE), HttpStatus.INTERNAL_SERVER_ERROR);
     }
     @ExceptionHandler(UnknownError.class)
-    public ResponseEntity<Map<String, String>>handleUnknownException(UnknownError exception) {
+    public ResponseEntity<Map<String, String>>handleUnknownErrorException(UnknownError exception) {
         return new ResponseEntity<>(Message.asJson(SERVER_ERROR_MESSAGE), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

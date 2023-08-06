@@ -15,12 +15,7 @@ public class Validations {
     Validator validator;
 
     public <T> void validate(T entity) {
-
-        System.out.println("ENTIDADE "  + entity);
-
         List<ConstraintViolation<T>> violations = validator.validate(entity).stream().toList();
-
-        System.out.println("VIOLAÇÕES "  + violations);
 
         if (!violations.isEmpty()) throw new ValidationException(violations.get(0).getMessage());
     }
