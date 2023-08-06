@@ -88,12 +88,11 @@ public class UserService {
     }
 
     public UserDto update(User loggedUser, CreateOrUpdateAccountDto user) {
-        if (loggedUser == null) throw new NullPointerException("Você não está autenticado, faça seu login!");
-
         validations.validate(user);
 
         repository.findByEmail(user.email()).ifPresent(account -> {
-            throw new IllegalArgumentException("Um usuário já está usando esse e-mail!");
+            if (!account.getId().equals(loggedUser.getId()))
+               throw new IllegalArgumentException("Um usuário já está usando esse e-mail!");
         });
 
         if(user.name().equals(user.password())) throw new IllegalArgumentException(PASSWORD_EQUALS_NAME_MESSAGE);
@@ -109,8 +108,6 @@ public class UserService {
     }
 
     public Map<String, String> deleteAccount(User loggedUser) {
-        if (loggedUser == null) throw new NullPointerException("Você não está autenticado, faça seu login!");
-
         repository.deleteById(loggedUser.getId());
 
         var resultMessage = new HashMap<String, String>();

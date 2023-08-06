@@ -1,9 +1,6 @@
 package com.joshuahawatta.moneyzilla.dtos.user;
 
-import jakarta.validation.constraints.Negative;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 public record CreateOrUpdateAccountDto(
@@ -20,7 +17,7 @@ public record CreateOrUpdateAccountDto(
         @NotNull(message = "Confirme sua senha!") @NotBlank(message = "Confirme sua senha!")
         String confirmPassword,
 
-        @Negative(message = "Valor inválido")
+        @Min(value = 0, message = "Valor inválido")
         @NotNull(message = "Informe o quanto você deseja vigiar!")
         BigDecimal money
 ) {}

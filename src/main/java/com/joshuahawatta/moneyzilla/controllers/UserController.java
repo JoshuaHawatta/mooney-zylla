@@ -23,17 +23,17 @@ public class UserController {
         return new ResponseEntity<>(service.save(user), HttpStatus.CREATED);
     }
 
-    @PatchMapping(value = "/{id}")
+    @DeleteMapping
+    public ResponseEntity<Map<String, String>> deleteAccount(@AuthenticationPrincipal User loggedUser) {
+        return new ResponseEntity<>(service.deleteAccount(loggedUser), HttpStatus.OK);
+    }
+
+    @PatchMapping
     public ResponseEntity<UserDto> updateAccount(
             @AuthenticationPrincipal User loggedUser,
             @RequestBody CreateOrUpdateAccountDto user
     ) {
         return new ResponseEntity<>(service.update(loggedUser, user), HttpStatus.OK);
-    }
-
-    @DeleteMapping
-    public ResponseEntity<Map<String, String>> deleteAccount(@AuthenticationPrincipal User loggedUser) {
-        return new ResponseEntity<>(service.deleteAccount(loggedUser), HttpStatus.OK);
     }
 
     @PostMapping("/login")
