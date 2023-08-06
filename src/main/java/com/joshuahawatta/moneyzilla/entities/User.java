@@ -2,8 +2,6 @@ package com.joshuahawatta.moneyzilla.entities;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.springframework.security.core.GrantedAuthority;
@@ -29,15 +27,12 @@ public class User extends BaseEntityModel implements UserDetails {
     @Id
     private Long id;
 
-    @NotBlank(message = "Nome obrigatório!")
     @Column(name = "name", nullable = false)
     private String name;
 
     @Column(name = "email", nullable = false)
     private String email;
 
-    @NotBlank(message = "Senha obrigatória!")
-    @Size(min = 8, message = "A senha deve ter no mínimo 8 caractéres!")
     @Column(name = "password", nullable = false)
     private String password;
 

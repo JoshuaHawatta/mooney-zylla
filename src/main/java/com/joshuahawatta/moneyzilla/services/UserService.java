@@ -2,7 +2,8 @@ package com.joshuahawatta.moneyzilla.services;
 
 import com.joshuahawatta.moneyzilla.configurations.security.AuthenticationService;
 import com.joshuahawatta.moneyzilla.configurations.security.JwtService;
-import com.joshuahawatta.moneyzilla.dtos.user.CreateAccountDto;
+import com.joshuahawatta.moneyzilla.dtos.user.CreateOrUpdateAccountDto;
+import com.joshuahawatta.moneyzilla.dtos.user.LoginDto;
 import com.joshuahawatta.moneyzilla.dtos.user.UserDto;
 import com.joshuahawatta.moneyzilla.configurations.validations.Validations;
 import com.joshuahawatta.moneyzilla.entities.User;
@@ -18,8 +19,6 @@ import java.util.*;
 
 @Service
 public class UserService {
-    private static final String INVALID_ID_MESSAGE = "ID inválido!";
-    private static final String ACCOUNT_NOT_FOUND_MESSAGE = "Conta não encontrada!";
     private static final String PASSWORD_EQUALS_NAME_MESSAGE = "A senha não pode ser igual ao nome!";
 
     @Autowired
@@ -37,33 +36,12 @@ public class UserService {
     @Autowired
     AuthenticationService authenticationService;
 
-    public List<UserDto> findAll() {
-        List<UserDto> users = new ArrayList<>();
+    public Map<String, Object> login(LoginDto user) {
+        validations.validate(user);
 
-        for (User user : repository.findAll()) users.add(new UserDto(user));
+        var foundUser = (User) authenticationService.loadUserByUsername(user.email());
 
-        return users;
-    }
-
-    public UserDto findById(Long id) {
-        if(id == null || id <= 0) throw new IllegalArgumentException(INVALID_ID_MESSAGE);
-
-        var user = repository.findById(id);
-
-        if (user.isEmpty()) throw new NullPointerException(ACCOUNT_NOT_FOUND_MESSAGE);
-
-        return new UserDto(user.get());
-    }
-
-    public Map<String, Object> login(User user) {
-        if (user.getEmail() == null || user.getEmail().isBlank())
-            throw new IllegalArgumentException("E-mail obrigatório!");
-        else if (user.getPassword() == null || user.getPassword().isBlank())
-            throw new IllegalArgumentException("Senha obrigatória!");
-
-        var foundUser = (User) authenticationService.loadUserByUsername(user.getEmail());
-
-        if(!encoder.matches(user.getPassword(), foundUser.getPassword()))
+        if(!encoder.matches(user.password(), foundUser.getPassword()))
             throw new IllegalArgumentException("As senhas não batem!");
 
         var results = new HashMap<String, Object>();
@@ -79,7 +57,7 @@ public class UserService {
         }
     }
 
-    public Map<String, Object> save(CreateAccountDto user) {
+    public Map<String, Object> save(CreateOrUpdateAccountDto user) {
         validations.validate(user);
 
         repository.findByEmail(user.email()).ifPresent(account -> {
@@ -88,8 +66,6 @@ public class UserService {
 
         if(user.name().equals(user.password()))
             throw new IllegalArgumentException(PASSWORD_EQUALS_NAME_MESSAGE);
-        else if(user.password() == null || user.password().isBlank())
-            throw new IllegalArgumentException("Digite uma senha válida!");
         else if(!user.confirmPassword().equals(user.password()))
             throw new IllegalArgumentException("As senhas não são iguais!");
 
@@ -111,35 +87,35 @@ public class UserService {
         return results;
     }
 
-    public UserDto update(Long id, User user) {
-        if(id == null || id <= 0) throw new IllegalArgumentException(INVALID_ID_MESSAGE);
+    public UserDto update(User loggedUser, CreateOrUpdateAccountDto user) {
+        if (loggedUser == null) throw new NullPointerException("Você não está autenticado, faça seu login!");
 
         validations.validate(user);
 
-        var existingUser = repository.findById(id)
-                .orElseThrow(() -> new NullPointerException(ACCOUNT_NOT_FOUND_MESSAGE));
+        repository.findByEmail(user.email()).ifPresent(account -> {
+            throw new IllegalArgumentException("Um usuário já está usando esse e-mail!");
+        });
 
-        if(user.getName().equals(user.getPassword()))
-            throw new IllegalArgumentException(PASSWORD_EQUALS_NAME_MESSAGE);
-        else if(user.getPassword() == null || user.getPassword().isBlank())
-            throw new IllegalArgumentException("Senha inválida!");
+        if(user.name().equals(user.password())) throw new IllegalArgumentException(PASSWORD_EQUALS_NAME_MESSAGE);
 
-        existingUser.setName(user.getName().trim());
-        existingUser.setEmail(user.getEmail().trim());
-        existingUser.setPassword(encoder.encode(user.getPassword().trim()));
-        existingUser.setMoney(new BigDecimal(user.getMoney().toString()));
+        loggedUser.setName(user.name().trim());
+        loggedUser.setEmail(user.email().trim());
+        loggedUser.setPassword(encoder.encode(user.password().trim()));
+        loggedUser.setMoney(new BigDecimal(user.money().toString()));
 
-        repository.save(existingUser);
+        repository.save(loggedUser);
 
-        return new UserDto(existingUser);
+        return new UserDto(loggedUser);
     }
 
-    public void deleteById(Long id) {
-        if(id == null || id <= 0) throw new IllegalArgumentException(INVALID_ID_MESSAGE);
+    public Map<String, String> deleteAccount(User loggedUser) {
+        if (loggedUser == null) throw new NullPointerException("Você não está autenticado, faça seu login!");
 
-        var existingUser = repository.findById(id)
-                .orElseThrow(() -> new NullPointerException(ACCOUNT_NOT_FOUND_MESSAGE));
+        repository.deleteById(loggedUser.getId());
 
-        repository.deleteById(existingUser.getId());
+        var resultMessage = new HashMap<String, String>();
+        resultMessage.put("message", "Até mais, obrigado pelos peixes!");
+
+        return resultMessage;
     }
 }

@@ -2,8 +2,6 @@ package com.joshuahawatta.moneyzilla.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import java.io.Serial;
@@ -25,22 +23,18 @@ public class Billing extends BaseEntityModel implements Serializable {
     @Id
     private Long id;
 
-    @NotBlank(message = "Informe o nome da compra!")
     @Column(name = "name", nullable = false)
     private String name;
 
-    @NotNull(message = "Informe o valor da compra!")
     @Column(name = "price", nullable = false, columnDefinition = "DECIMAL(10,2)")
     private BigDecimal price;
 
-    @NotBlank(message = "Informe o tipo da compra!")
     @Column(name = "type", nullable = false)
     private String type;
 
     @Column(name = "description")
     private String description;
 
-    @NotNull(message = "Informe a data da compra!")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
     @Column(name = "bought_date", nullable = false)
     private LocalDateTime boughtDate;

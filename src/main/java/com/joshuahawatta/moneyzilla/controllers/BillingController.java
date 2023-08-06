@@ -1,6 +1,6 @@
 package com.joshuahawatta.moneyzilla.controllers;
 
-import com.joshuahawatta.moneyzilla.dtos.billing.BillingDto;
+import com.joshuahawatta.moneyzilla.dtos.billing.CreateOrUpdateBillingDto;
 import com.joshuahawatta.moneyzilla.entities.User;
 import com.joshuahawatta.moneyzilla.services.BillingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ public class BillingController {
 
     @PostMapping
     public ResponseEntity<Map<String, Object>> saveBilling(
-            @RequestBody BillingDto billing,
+            @RequestBody CreateOrUpdateBillingDto billing,
             @AuthenticationPrincipal User loggedUser
     ) {
         return new ResponseEntity<>(service.save(billing,loggedUser), HttpStatus.CREATED);
