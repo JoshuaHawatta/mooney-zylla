@@ -1,9 +1,11 @@
 package com.joshuahawatta.moneyzilla.configurations.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.joshuahawatta.moneyzilla.enums.PublicRoutes;
 import com.joshuahawatta.moneyzilla.helpers.Message;
 import com.joshuahawatta.moneyzilla.repositories.UserRepository;
 import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +15,15 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
+import java.util.Arrays;
+import java.util.List;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
+    private static final List<String> PUBLIC_URLS = Arrays.stream(PublicRoutes.values())
+            .map(PublicRoutes::getRoute).toList();
+
     @Autowired
     JwtService service;
 
@@ -27,24 +35,29 @@ public class JwtFilter extends OncePerRequestFilter {
         HttpServletRequest req,
         HttpServletResponse res,
         FilterChain nextFilter
-    ) throws IOException {
+    ) throws IOException, ServletException {
+        if (PUBLIC_URLS.contains(req.getServletPath())) {
+            nextFilter.doFilter(req, res);
+            return;
+        }
+
         try {
             var authorization = req.getHeader("Authorization");
 
-            if(authorization == null)
-                throw new NullPointerException("Você não tem a autorização necessária para fazer isso!");
+            if(authorization == null) throw new AccessDeniedException("Você precisa fazer o login!");
 
             var token = authorization.replace("Bearer ", "");
+
+            if(token.isEmpty()) throw new AccessDeniedException("Você precisa fazer o login!");
+
             var subject = service.getTokenSubject(token);
 
             var user = repository.findByEmail(subject)
-                    .orElseThrow(() -> new NullPointerException("Você não está autenticado!"));
+                    .orElseThrow(() -> new NullPointerException("E-mail não encontrado!"));
 
-            var authenticatedUser = new UsernamePasswordAuthenticationToken(
-                    user, null, user.getAuthorities()
+            SecurityContextHolder.getContext().setAuthentication(
+                    new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities())
             );
-
-            SecurityContextHolder.getContext().setAuthentication(authenticatedUser);
 
             nextFilter.doFilter(req, res);
         } catch(Exception exception) {

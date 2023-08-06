@@ -1,5 +1,6 @@
 package com.joshuahawatta.moneyzilla.configurations.security;
 
+import com.joshuahawatta.moneyzilla.enums.PublicRoutes;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -16,21 +17,26 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 public class WebConfigSecurity {
-    private static final String USERS_ROUTE = "/user";
     private final JwtFilter jwtFilter;
 
     public WebConfigSecurity(JwtFilter jwtFilter) { this.jwtFilter = jwtFilter; }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http.csrf().disable()
+        return http
+                .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and().authorizeHttpRequests()
-                .requestMatchers(HttpMethod.POST, USERS_ROUTE, USERS_ROUTE + "/login").permitAll()
-                .requestMatchers(HttpMethod.GET, "/index", "/home", "/").permitAll()
-                .anyRequest().authenticated()
-                .and().addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-                .build();
+                .and().authorizeHttpRequests(req -> {
+                    req.requestMatchers(
+                            HttpMethod.POST,
+                            PublicRoutes.CREATE_ACCOUNT.getRoute(),
+                            PublicRoutes.LOGIN.getRoute()
+                    ).permitAll();
+
+                    req.requestMatchers(HttpMethod.GET, PublicRoutes.INDEX.getRoute()).permitAll();
+                    req.anyRequest().authenticated();
+                })
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class).build();
     }
 
     @Bean
