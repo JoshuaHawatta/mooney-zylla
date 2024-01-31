@@ -14,11 +14,14 @@ public class JwtService {
     private static final String ISSUER = "User";
     private static final String DF_UTC = "-03:00";
 
-    public JwtService(@Value("${JWT_SECRET}") String jwtSecret) { this.jwtSecret = jwtSecret; }
+    public JwtService(@Value("${JWT_SECRET}") String jwtSecret) {
+        this.jwtSecret = jwtSecret;
+    }
 
     public String generateToken(User user) {
         final var tokenExpirationTime = LocalDateTime.now()
-                .plusHours(8L).toInstant(ZoneOffset.of(JwtService.DF_UTC));
+                .plusHours(8L)
+                .toInstant(ZoneOffset.of(JwtService.DF_UTC));
 
         return JWT.create()
                 .withIssuer(ISSUER)
@@ -30,6 +33,9 @@ public class JwtService {
 
     public String getTokenSubject(String token) {
         return JWT.require(Algorithm.HMAC256(jwtSecret))
-                .withIssuer(ISSUER).build().verify(token).getSubject();
+                .withIssuer(ISSUER)
+                .build()
+                .verify(token)
+                .getSubject();
     }
 }
