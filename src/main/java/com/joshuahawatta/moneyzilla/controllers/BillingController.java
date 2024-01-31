@@ -4,7 +4,6 @@ import com.joshuahawatta.moneyzilla.dtos.billing.BillingDto;
 import com.joshuahawatta.moneyzilla.dtos.billing.CreateOrUpdateBillingDto;
 import com.joshuahawatta.moneyzilla.entities.User;
 import com.joshuahawatta.moneyzilla.services.BillingService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,8 +15,9 @@ import java.util.Map;
 @RestController
 @RequestMapping("/billing")
 public class BillingController {
-    @Autowired
-    BillingService service;
+    private final BillingService service;
+
+    public BillingController(BillingService service) { this.service = service; }
 
     @PostMapping
     public ResponseEntity<Map<String, Object>> saveBilling(

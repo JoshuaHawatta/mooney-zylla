@@ -6,7 +6,6 @@ import com.joshuahawatta.moneyzilla.dtos.billing.CreateOrUpdateBillingDto;
 import com.joshuahawatta.moneyzilla.entities.Billing;
 import com.joshuahawatta.moneyzilla.entities.User;
 import com.joshuahawatta.moneyzilla.repositories.BillingRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,11 +14,13 @@ import java.util.Map;
 
 @Service
 public class BillingService {
-    @Autowired
-    BillingRepository repository;
+    private final BillingRepository repository;
+    private final Validations validations;
 
-    @Autowired
-    Validations validations;
+    public BillingService(BillingRepository repository, Validations validations) {
+        this.repository = repository;
+        this.validations = validations;
+    }
 
     public Map<String, Object> save (CreateOrUpdateBillingDto billing, User loggedUser) {
         validations.validate(billing);

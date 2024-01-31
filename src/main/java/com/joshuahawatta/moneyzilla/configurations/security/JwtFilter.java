@@ -8,7 +8,6 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,11 +23,14 @@ public class JwtFilter extends OncePerRequestFilter {
     private static final List<String> PUBLIC_URLS = Arrays.stream(PublicRoutes.values())
             .map(PublicRoutes::getRoute).toList();
 
-    @Autowired
-    JwtService service;
+    private final JwtService service;
+    private final UserRepository userRepository;
 
-    @Autowired
-    UserRepository repository;
+    public JwtFilter(JwtService service, UserRepository userRepository) {
+        this.service = service;
+        this.userRepository = userRepository;
+    }
+
 
     @Override
     protected void doFilterInternal(
@@ -52,7 +54,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
             var subject = service.getTokenSubject(token);
 
-            var user = repository.findByEmail(subject)
+            var user = userRepository.findByEmail(subject)
                     .orElseThrow(() -> new NullPointerException("E-mail não encontrado!"));
 
             SecurityContextHolder.getContext().setAuthentication(

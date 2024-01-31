@@ -9,7 +9,6 @@ import com.joshuahawatta.moneyzilla.configurations.validations.Validations;
 import com.joshuahawatta.moneyzilla.entities.User;
 import com.joshuahawatta.moneyzilla.helpers.Message;
 import com.joshuahawatta.moneyzilla.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,21 +19,25 @@ import java.util.*;
 @Service
 public class UserService {
     private static final String PASSWORD_EQUALS_NAME_MESSAGE = "A senha não pode ser igual ao nome!";
+    private final UserRepository repository;
+    private final Validations validations;
+    private final PasswordEncoder encoder;
+    private final JwtService jwtService;
+    private final AuthenticationService authenticationService;
 
-    @Autowired
-    UserRepository repository;
-
-    @Autowired
-    Validations validations;
-
-    @Autowired
-    PasswordEncoder encoder;
-
-    @Autowired
-    JwtService jwtService;
-
-    @Autowired
-    AuthenticationService authenticationService;
+    public UserService(
+            UserRepository repository,
+            Validations validations,
+            PasswordEncoder encoder,
+            JwtService jwtService,
+            AuthenticationService authenticationService
+    ) {
+        this.repository = repository;
+        this.validations = validations;
+        this.encoder = encoder;
+        this.jwtService = jwtService;
+        this.authenticationService = authenticationService;
+    }
 
     public Map<String, Object> login(LoginDto user) {
         validations.validate(user);

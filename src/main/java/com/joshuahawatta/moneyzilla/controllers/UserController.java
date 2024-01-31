@@ -5,7 +5,6 @@ import com.joshuahawatta.moneyzilla.dtos.user.LoginDto;
 import com.joshuahawatta.moneyzilla.dtos.user.UserDto;
 import com.joshuahawatta.moneyzilla.entities.User;
 import com.joshuahawatta.moneyzilla.services.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -15,8 +14,9 @@ import java.util.Map;
 @RestController
 @RequestMapping("/user")
 public class UserController {
-    @Autowired
-    UserService service;
+    private final UserService service;
+
+    public UserController(UserService service) { this.service = service; }
 
     @PostMapping
     public ResponseEntity<Map<String, Object>> save(@RequestBody CreateOrUpdateAccountDto user) {

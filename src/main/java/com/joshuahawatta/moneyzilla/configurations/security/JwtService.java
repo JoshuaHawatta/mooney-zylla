@@ -11,20 +11,25 @@ import java.time.ZoneOffset;
 @Service
 public class JwtService {
     private final String jwtSecret;
-    public static final String ISSUER = "User";
+    private static final String ISSUER = "User";
+    private static final String DF_UTC = "-03:00";
 
     public JwtService(@Value("${JWT_SECRET}") String jwtSecret) { this.jwtSecret = jwtSecret; }
 
     public String generateToken(User user) {
+        final var tokenExpirationTime = LocalDateTime.now()
+                .plusHours(8L).toInstant(ZoneOffset.of(JwtService.DF_UTC));
+
         return JWT.create()
                 .withIssuer(ISSUER)
                 .withSubject(user.getUsername())
                 .withClaim("id", user.getId())
-                .withExpiresAt(LocalDateTime.now().plusHours(8L).toInstant(ZoneOffset.of("-03:00")))
+                .withExpiresAt(tokenExpirationTime)
                 .sign(Algorithm.HMAC256(jwtSecret));
     }
 
     public String getTokenSubject(String token) {
-        return JWT.require(Algorithm.HMAC256(jwtSecret)).withIssuer(ISSUER).build().verify(token).getSubject();
+        return JWT.require(Algorithm.HMAC256(jwtSecret))
+                .withIssuer(ISSUER).build().verify(token).getSubject();
     }
 }
