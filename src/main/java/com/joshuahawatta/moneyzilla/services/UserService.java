@@ -93,10 +93,14 @@ public class UserService {
     public UserDto update(User loggedUser, CreateOrUpdateAccountDto user) {
         validations.validate(user);
 
-        repository.findByEmail(user.email()).ifPresent(account -> {
-            if (!account.getId().equals(loggedUser.getId()))
-               throw new IllegalArgumentException("Um usuário já está usando esse e-mail!");
-        });
+        repository.findByEmail(user.email())
+                .ifPresentOrElse(
+                    account -> {
+                        if (!account.getId().equals(loggedUser.getId()))
+                           throw new IllegalArgumentException("Um usuário já está usando esse e-mail!");
+                    },
+                    () -> { throw new NullPointerException("Nenhuma conta encontrada neste e-mail!"); }
+                );
 
         if(user.name().equals(user.password())) throw new IllegalArgumentException(PASSWORD_EQUALS_NAME_MESSAGE);
 
@@ -111,7 +115,11 @@ public class UserService {
     }
 
     public Map<String, String> deleteAccount(User loggedUser) {
-        repository.deleteById(loggedUser.getId());
+        repository.findById(loggedUser.getId())
+                .ifPresentOrElse(
+                        account -> repository.deleteById(account.getId()),
+                        () -> { throw new NullPointerException("Conta não encontrada"); }
+                );
 
         var resultMessage = new HashMap<String, String>();
         resultMessage.put("message", "Até mais, obrigado pelos peixes!");
